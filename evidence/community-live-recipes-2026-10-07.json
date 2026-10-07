@@ -1,0 +1,3754 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-07",
+  "project_repository": "https://github.com/weswhet/russet",
+  "recipe_repository": "https://github.com/autopkg/recipes",
+  "recipe_commit": "0f7b61ab061c77710be4140c404910a11f89fc7b",
+  "baseline": "live-recipes-2026-10-07.json",
+  "selection": "Exact set of 94 baseline recipes with outcome unsupported_custom_processor",
+  "counts": {
+    "selected": 94,
+    "passed": 81,
+    "workflow_completed": 65,
+    "deprecated_office_2016_stop": 15,
+    "catalog_skip": 1,
+    "failed": 12,
+    "timeout": 1,
+    "processor_rejections": 0
+  },
+  "sweep": {
+    "run_id": 37572245613,
+    "url": "https://github.com/weswhet/russet/actions/runs/37572245613",
+    "source_commit": "b4085d008253c54ad201ab998c12333e440ef399",
+    "runner": "macos-15",
+    "timeout_seconds": 900,
+    "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba"
+  },
+  "final_runtime_commit": "1cdfe28055cbbd45d674fda40b7ebd61bf31631d",
+  "release_status": "Unreleased additions on main; not included in 1.0.0 archives",
+  "controlled_comparisons": {
+    "modern": 62,
+    "legacy": 41,
+    "builders": 9,
+    "total": 112,
+    "original_frozen_processor_count": 46,
+    "promoted_implementations": 12,
+    "shared_aliases": 1,
+    "total_implementations": 58,
+    "total_names": 59
+  },
+  "ci_runs": [
+    {
+      "scope": "Four-target build, unit tests, lint, and distribution checks",
+      "run_id": 37575291895,
+      "url": "https://github.com/weswhet/russet/actions/runs/37575291895",
+      "status": "passed"
+    },
+    {
+      "scope": "Windows Python differential",
+      "run_id": 37575291906,
+      "url": "https://github.com/weswhet/russet/actions/runs/37575291906",
+      "status": "passed"
+    },
+    {
+      "scope": "macOS/Linux Python differential",
+      "run_id": 37575291916,
+      "url": "https://github.com/weswhet/russet/actions/runs/37575291916",
+      "status": "passed",
+      "detail": "Both macOS and Linux passed, including all community comparisons, relocated framework verification, and native metadata, icon, and mounted-volume lifetime checks."
+    }
+  ],
+  "focused_relocatable_python_retry": {
+    "run_id": 37574104325,
+    "url": "https://github.com/weswhet/russet/actions/runs/37574104325",
+    "source_commit": "2dfe2fb525facd9badb04df789588e23d8473ccc",
+    "binary_sha256": "256ec2f0fd24f18c05f6754e4b1eee085e7b0baaa5618d6e9c660cc8883573e7",
+    "recipe": "RelocatablePython/RelocatablePython.build.recipe.yaml",
+    "reason": "Both implementations reached pip and failed on the same literal nested requirements path; the legacy Python interpreter path was made available on the hosted runner.",
+    "results": {
+      "rust": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 385.383,
+        "recipe_sha256": "54a8228c0ecc0d99c5e01879e999bc8d0fd27444e35773d03579e9656f5f2e75",
+        "failure_messages": [
+          "Error in com.github.autopkg.build.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: CPPFLAGS=\"-I/Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/include/python3.11\" \"/Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/bin/python3.11\" \"-s\" \"-m\" \"pip\" \"install\" \"-r\" \"%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt\" failed with exit code 1: ERROR: Could not open requirements file: [Errno 2] No such file or directory: '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt'\n\n[notice] A new release of pip is available: 24.0 -> 26.2.1\n[notice] To update, run: /Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/bin/python3.11 -m pip install --upgrade pip\n"
+        ],
+        "evidence_sha256": {
+          "result.json": "b7bcf915ef8ac8fde2633e21b45ecf1be4ecc94e817977672d1378b7b44729c2",
+          "run.log": "e2dd2471b62f99305234b8911a6836e5d40f1262bdb45db22bdcac852beaf9a6",
+          "report.plist": "03015026c0da4666dbcbdcf249c454aa71cd7b994db7bfbec92129b928ce97e3"
+        },
+        "pip_error": "ERROR: Could not open requirements file: [Errno 2] No such file or directory: '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt'"
+      },
+      "python": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 31.016,
+        "recipe_sha256": "54a8228c0ecc0d99c5e01879e999bc8d0fd27444e35773d03579e9656f5f2e75",
+        "failure_messages": [
+          "Error in com.github.autopkg.build.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: Command '['/usr/local/autopkg/python', '/Users/runner/work/_temp/live-evidence/reference-results/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/relocatable-python/make_relocatable_python_framework.py', '--python-version', '3.11.9', '--pip-requirements', '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt', '--os-version', '11', '--destination', '/Users/runner/work/_temp/live-evidence/reference-results/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework']' returned non-zero exit status 1."
+        ],
+        "evidence_sha256": {
+          "result.json": "9e13f90fcf226c07f8b15106a2252048490d311fab4411cf8f5917c11c20b298",
+          "run.log": "fc2ca6eb0ad98522e2794b52f18c66dc231e849e3b95934aa6da22a79bf9d1a4",
+          "report.plist": "59953db8b5d608bca30534132507cb90182fa039c84e779e9c1e7812fae49c70"
+        },
+        "pip_error": "ERROR: Could not open requirements file: [Errno 2] No such file or directory: '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt'"
+      }
+    }
+  },
+  "windows_retry": {
+    "schema_version": 1,
+    "recipe_repository": "https://github.com/autopkg/recipes",
+    "recipe_commit": "0f7b61ab061c77710be4140c404910a11f89fc7b",
+    "rustypkg_commit": "b09435d1462e9cdeff2aead41785e52c0a9f9f80",
+    "binary_sha256": "f795b77789a85445f6bc22867b4b5112608b7d936f6b3c86511f2982d14a4159",
+    "os": "Windows-10-10.0.26100-SP0",
+    "runner_image": "20260925.250.1",
+    "run_id": "37574721494",
+    "run_attempt": "1",
+    "signtool": {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\signtool.exe",
+      "sha256": "e7b517a6a2828af2d1fba3da60ae1e322a95141bfae192622725329630caa2b3"
+    },
+    "chocolatey": {
+      "path": "C:\\ProgramData\\chocolatey\\bin\\choco.exe",
+      "sha256": "a158ca956434a4c4cfa696a7dc3711b60b63bab60b5e1a3401ccbd6e28c875ba",
+      "version": "2.7.4"
+    },
+    "recipe_files": {
+      "Mozilla/FirefoxWindows.download.recipe": "df74f344951eae6460c28fda126e56dbd55e87a532898a6962ebb42b456aba3f",
+      "Mozilla/Firefox.nupkg.recipe": "857290ff432c0a5cd7bb1aa854079755e70867ff4d5bb39b15a3bee0ab7f0562"
+    },
+    "results": [
+      {
+        "recipe": "Mozilla/FirefoxWindows.download.recipe",
+        "recipe_sha256": "df74f344951eae6460c28fda126e56dbd55e87a532898a6962ebb42b456aba3f",
+        "command": [
+          "D:\\a\\russet\\russet\\rust\\target\\x86_64-pc-windows-msvc\\release\\autopkg-rs.exe",
+          "run",
+          "--prefs",
+          "D:\\a\\_temp\\live-windows-evidence\\FirefoxWindows.download.recipe\\prefs.plist",
+          "-vv",
+          "--report-plist",
+          "D:\\a\\_temp\\live-windows-evidence\\FirefoxWindows.download.recipe\\report.plist",
+          "D:\\a\\_temp\\windows-upstream-recipes\\Mozilla\\FirefoxWindows.download.recipe"
+        ],
+        "report": "FirefoxWindows.download.recipe\\report.plist",
+        "log": "FirefoxWindows.download.recipe\\run.log",
+        "exit_status": 70,
+        "status": "failed",
+        "duration_seconds": 1.609,
+        "artifacts": [
+          {
+            "path": "FirefoxWindows.download.recipe\\work\\cache\\com.github.autopkg.download.FirefoxWindows\\downloads\\Firefox%20Setup%20157.0.1.msi",
+            "size": 93581312,
+            "sha256": "19a7e33aaa79b4711c566c53ebf5779fb79efe1ec8adccff2c5cb659aa7fa8ec"
+          }
+        ],
+        "report_sha256": "613da2ec57dc78eba99bc584fb20431de0001b5bda783f7587003857b65db516",
+        "diagnostic": "SignTool Error: The signing certificate does not have a specified SHA1 hash.",
+        "evidence_sha256": {
+          "result.json": "b78dd8ca8c04ec5a2c25f2232fd8f07e67427a2cbcb6e859a498ad6099528e6d",
+          "run.log": "2a6ee3e2e6ed20c6b2a55fff1a4469828f3839585508ea612749643d5bf79cfb",
+          "report.plist": "613da2ec57dc78eba99bc584fb20431de0001b5bda783f7587003857b65db516"
+        }
+      },
+      {
+        "recipe": "Mozilla/Firefox.nupkg.recipe",
+        "recipe_sha256": "857290ff432c0a5cd7bb1aa854079755e70867ff4d5bb39b15a3bee0ab7f0562",
+        "command": [
+          "D:\\a\\russet\\russet\\rust\\target\\x86_64-pc-windows-msvc\\release\\autopkg-rs.exe",
+          "run",
+          "--prefs",
+          "D:\\a\\_temp\\live-windows-evidence\\Firefox.nupkg.recipe\\prefs.plist",
+          "-vv",
+          "--report-plist",
+          "D:\\a\\_temp\\live-windows-evidence\\Firefox.nupkg.recipe\\report.plist",
+          "D:\\a\\_temp\\windows-upstream-recipes\\Mozilla\\Firefox.nupkg.recipe"
+        ],
+        "report": "Firefox.nupkg.recipe\\report.plist",
+        "log": "Firefox.nupkg.recipe\\run.log",
+        "exit_status": 70,
+        "status": "failed",
+        "duration_seconds": 0.953,
+        "artifacts": [
+          {
+            "path": "Firefox.nupkg.recipe\\work\\cache\\com.github.autopkg.nupkg.Firefox\\downloads\\Firefox%20Setup%20157.0.1.msi",
+            "size": 93581312,
+            "sha256": "19a7e33aaa79b4711c566c53ebf5779fb79efe1ec8adccff2c5cb659aa7fa8ec"
+          }
+        ],
+        "report_sha256": "de30be50b8c58d0d2988b44294533850eb41dd9bb0026f0818b5c412c7cd5f97",
+        "diagnostic": "SignTool Error: The signing certificate does not have a specified SHA1 hash.",
+        "evidence_sha256": {
+          "result.json": "1166ce398164eab67f8aa3054a47391d0d0640e400556ceb4d70980a197d5e2e",
+          "run.log": "2dc49b24afa3f4fed4607390fa3b6296628815a81dbc9bb4182f0958d9431a70",
+          "report.plist": "de30be50b8c58d0d2988b44294533850eb41dd9bb0026f0818b5c412c7cd5f97"
+        }
+      }
+    ],
+    "url": "https://github.com/weswhet/russet/actions/runs/37574721494",
+    "comparison": "native_only",
+    "outcome": "Both MSI downloads completed; unchanged recipe SHA1 pin rejected by native signtool; no package produced and no bypass applied.",
+    "recipe_hash_note": "Windows checkout uses CRLF; these file-byte hashes differ from the macOS LF checkout at the same recipe commit."
+  },
+  "extended_autopkg_retry": {
+    "run_id": 37576169122,
+    "url": "https://github.com/weswhet/russet/actions/runs/37576169122",
+    "source_commit": "0526d0a9dcca488fc7692845f5a201f390bc9f33",
+    "recipe": "AutoPkg/AutoPkgGitMaster.pkg.recipe",
+    "status": "pending",
+    "detail": "Longer live retry still running at evidence capture; original 900-second sweep timeout remains in counts."
+  },
+  "limitations": [
+    "Successful live Rust runs were not rerun with Python. Live pass counts establish native recipe coverage, not full end-to-end differential equivalence.",
+    "Python fallback ran only after native failures; the initial framework fallback failed at the absent legacy interpreter path, so it was not equivalent evidence until the focused retry.",
+    "Live sweep used b4085d0, preceding final runtime 1cdfe28; final CI validates later fixes. The entire 94-recipe sweep was not repeated at final runtime.",
+    "External vendor responses and application versions can change.",
+    "Original sweep counts remain unchanged by focused retries.",
+    "All live testing used GitHub-hosted runners; no local VM."
+  ],
+  "recipes": [
+    {
+      "recipe": "AdobeAcrobatPro/AdobeAcrobatProXUpdate.download.recipe",
+      "recipe_sha256": "3dbc21454a22b91c391936799e8f9a3263cd020566a5c384ad54ab581a701463",
+      "identifier": "com.github.autopkg.download.AdobeAcrobatProXUpdate",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 30.148,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "b4225cad6d52",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "0974a8bc47978602bd3383fff8dd45a9e62b002c06aa6ebb49a36366dd1742ab",
+        "run.log": "91802bcb9662474274fd04a9551ecf5ea58f6f92321d0dc6b4ab5cb3ce288f15",
+        "report.plist": "7d3b6378c9fe32dc09fd9081a6d2228bb27d35f9629e9993c9749151bc8190ea"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AdobeAcrobatPro/AdobeAcrobatProXUpdate.munki.recipe",
+      "recipe_sha256": "5ccaf47065bb5545b6087150abcb36eb07a37a6b9e0dd5e568998fe877812c68",
+      "identifier": "com.github.autopkg.munki.AdobeAcrobatProXUpdate",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 5.147,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "3afc2e3a8419",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "8546075bdffffba9f78feb7b80628c28c03e7f39a8845030d8653cda36e6d37c",
+        "run.log": "9cbb8ff5b615af450ccc215d57ead26cd2aaec02ce2e00d763fbf297192d2edb",
+        "report.plist": "a27ccb0ae55b641d8515661c9a7cda028e0e2deba50c1b065864159508007f75"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AdobeFlashPlayer/AdobeFlashPlayer.download.recipe",
+      "recipe_sha256": "be6eb2bda8a85e76e8fc70d511d0fd3e65aaf26d5f52245661489004af231388",
+      "identifier": "com.github.autopkg.download.FlashPlayer",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 1.045,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.download.FlashPlayer: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/4f9867b4851b/work/cache/com.github.autopkg.download.FlashPlayer/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 1.359,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "d41d0b9b2ea520eecd7b0d0b3eb35b3499842112054ee0674a78262921edfcb6",
+          "run.log": "b8b6047b4e04d363506433c05a4a8ba08fcac3ae8513f0d579813d4e1de2dba3",
+          "report.plist": "7e8b5d9314ea286ad047b14b2b65467ba1d4bd6d79b0ec7a94207ec5e544e055"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.download.FlashPlayer: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/reference-results/4f9867b4851b/work/cache/com.github.autopkg.download.FlashPlayer/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "4f9867b4851b",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "d7143b14e0936f5f5b58679b537b3609c8abc411ddd833ef0807980e67e0298f",
+        "run.log": "0f758cccfeba259f41f2e76a99b74cab946f6a8296e58baee8b01bfbdd6ce001",
+        "report.plist": "a0e5d7b6ad414a8232966cb9d42abe3633d8c0b90f118dc88b376cc749e786e6"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "AdobeFlashPlayer/AdobeFlashPlayer.install.recipe",
+      "recipe_sha256": "2eada0d22cf845a6cfd27c8f5038e57e93f611fedbb76462a77af8087eef30d9",
+      "identifier": "com.github.autopkg.install.FlashPlayer",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 1.189,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.install.FlashPlayer: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/87e91cde90ca/work/cache/com.github.autopkg.install.FlashPlayer/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 1.273,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "0e63a4b19f18ddef7c06f4ca804b8fb3cab40105d0113d9232ab666b56a0e9a2",
+          "run.log": "8adbc474571008d3e86114b42f12590af9c44292a1827c091555b2055609b817",
+          "report.plist": "fd59bf4bb860cb4b7d015c92e8a1ad191c7b47edbcdf9f92c4885a33ff462389"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.install.FlashPlayer: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/reference-results/87e91cde90ca/work/cache/com.github.autopkg.install.FlashPlayer/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "87e91cde90ca",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "8b56be5e61d493bd99e3009e45ff26bb7b99a88aa02192b980537c46dd8116ad",
+        "run.log": "0e3fbdc41a3cae4b7f69a66e6f8d2bf29f20d982b4638512339fbaa5397e58b1",
+        "report.plist": "29c91dac955fd56e2568238f982310e5f7fcca766886a6f9fd8921828b217b22"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "AdobeFlashPlayer/AdobeFlashPlayer.munki.recipe",
+      "recipe_sha256": "2d9c62120dd57503be1d3a3b8e49f6baa7ecf79ae6298c843769b7c35058f598",
+      "identifier": "com.github.autopkg.munki.FlashPlayerNoRepackage",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.577,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.munki.FlashPlayerNoRepackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/ca02826eb58e/work/cache/com.github.autopkg.munki.FlashPlayerNoRepackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 0.613,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "076911e4f9ff2f0b53320c4d5016813370e25d066cca8b63eda019607ca9b14e",
+          "run.log": "84fbe14a52845c11ef3ad24b7b893faa888f4ed231c5b78cec94afaaec64f519",
+          "report.plist": "c853bf72135e63ef6b3e1779c3ccede07f05de43c95cbb54d5f5a0ecfca85e4c"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.munki.FlashPlayerNoRepackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/reference-results/ca02826eb58e/work/cache/com.github.autopkg.munki.FlashPlayerNoRepackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "ca02826eb58e",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "57090f555e332d0af7197ce35ea5073577c610c23ec276b26700d17ca3629165",
+        "run.log": "2300f051e4c699728a53cb6a435b72d3fe798c2d1f58d18861b6d54c68b09e2d",
+        "report.plist": "20f7d619994eed69603db6a61dc45afc8730e859ae0ab880d90d89c182e23843"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "AdobeFlashPlayer/AdobeFlashPlayer.pkg.recipe",
+      "recipe_sha256": "5e24f13a4eb3cf6d476a0e669025e2582f68e381d1e8d71353ad9d4f487f2a0d",
+      "identifier": "com.github.autopkg.pkg.FlashPlayerExtractPackage",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.959,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.pkg.FlashPlayerExtractPackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/42566431d442/work/cache/com.github.autopkg.pkg.FlashPlayerExtractPackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 0.723,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "337637a4901ef6fae655f60848b62bcb9acc7ea1957f62bc20c8b0f72238e1c5",
+          "run.log": "36ab2ac33c8025f6b0c8fd37c468445a31ecf0da19df953be335e1529abaf251",
+          "report.plist": "6e2aec2568e7ed07bf98afc286f2a9e9fcc48d835ac12ded8b46feefa776deeb"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.pkg.FlashPlayerExtractPackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/reference-results/42566431d442/work/cache/com.github.autopkg.pkg.FlashPlayerExtractPackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "42566431d442",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "45de8a9c3e95d0f72b3043327db539fcca0cb1400e9bcd146390c9dd9e504261",
+        "run.log": "fe44b585c868a42deb653ba144b621a79113ce899f608e76a84b496f23cf32e0",
+        "report.plist": "ab704698166cece17098bd0dea03336505bbb0c76bcde0097726dbc490742a65"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "AdobeFlashPlayer/AdobeFlashPlayerExtractPackage.munki.recipe",
+      "recipe_sha256": "d721895f412bbf20024ae7a3b2553a4db451ee578fe5e50594138a7790c6cac8",
+      "identifier": "com.github.autopkg.munki.FlashPlayerExtractPackage",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.702,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.munki.FlashPlayerExtractPackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/d24ef7515e3f/work/cache/com.github.autopkg.munki.FlashPlayerExtractPackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 0.726,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "a1d9563003dad68113d3d1beb60358d0f7b0b4d608021c8a29bb9de8ae4013c4",
+          "run.log": "406630305a9541c5f7f781a5e19984a83eb80e2a276b6664ed84b4c6d72ccc75",
+          "report.plist": "e1d20fde835a0c30d1b506fbf7d7a81ac3ac6dee7fb9bb38494964f0714f856e"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.munki.FlashPlayerExtractPackage: Processor: CodeSignatureVerifier: Error: mounting /Users/runner/work/_temp/live-evidence/reference-results/d24ef7515e3f/work/cache/com.github.autopkg.munki.FlashPlayerExtractPackage/downloads/AdobeFlashPlayer.dmg failed: hdiutil: attach failed - image not recognized\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "d24ef7515e3f",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "95f5d8e14f43c40cae2c866dd3611cc98dce9df875336adfb0f29c1d1da0fbdd",
+        "run.log": "3cf12e9219d6c7e529b2130dc57cd2c90918d990291ec4a8d4fa5532499669d3",
+        "report.plist": "24529de60e896bcd75e5caa38dcef9af44144e3149fb67124c49c0ed6ca09708"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "AdobeReader/AdobeReader.download.recipe",
+      "recipe_sha256": "7907e201dd9fc657bff93af3c04a5d72092c527ebc9b08614da366e399edd58a",
+      "identifier": "com.github.autopkg.download.AdobeReader",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 25.576,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "f072188bbf6e",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "48c7677ee87f98672059fb9e3bf85ba873c1664492d01903112672eb1071107c",
+        "run.log": "b4e7fa1f1582892a3b506c4989fb3410eb2cdf6111a9a0a9c799b5f9e38b3538",
+        "report.plist": "d8d14d84b2f73bc11877c39e3c5345f59299a48a5d5ce7bdd4eb3895c692ed6f"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AdobeReader/AdobeReader.install.recipe",
+      "recipe_sha256": "31765b49aaf5421d2b951fe33a527aeb3e8f5c54b8d9cf6e8b221e5168391242",
+      "identifier": "com.github.autopkg.install.AdobeReader",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 141.114,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_copier_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "2f53b2fab481",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "fe456dffa82f3fac899959453813c40f0f5351f1eb2719d525880ca2afe8833f",
+        "run.log": "886ff720fb80ce5a6a95afca1b30fd757ad227b78edc3a95970377c0f8623446",
+        "report.plist": "dc09d88b38ddd98006e36f338eed18e4174a56b9bbd20685e020e6d3ad36fd83"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AdobeReader/AdobeReader.munki.recipe",
+      "recipe_sha256": "1bd5ee0748431de8a5c25d88cce962a5418b268f333ac57abbc4865d102ac73d",
+      "identifier": "com.github.autopkg.munki.AdobeReader",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 52.525,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "2608c51b2b0e",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "d8cc7c6aa13c609710a32f9bdaea046b5b554874a55f76da83ffcc08b6c9f043",
+        "run.log": "d9e7386b8903fc26b11a05e0a4710c57201436a44001489470f826fd31fddaef",
+        "report.plist": "2207f531a3a2a6ce0c3a62c128271c9d86b9c0444a8d7f3b786c3f7e8a3aaa6f"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AdobeReader/AdobeReader.pkg.recipe",
+      "recipe_sha256": "de60aa1f9fbfce148ad39e1f8ff39d120ab4a639b224495134df74c12b106d44",
+      "identifier": "com.github.autopkg.pkg.AdobeReader",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 46.389,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_copier_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "a0c5cee56e0b",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "4cfc54330123b4eacc07fa4c7635998754bf9b28edf136c9b323e863c7a28998",
+        "run.log": "02746cf09c88f19446d4c095d0f6c20efc4142e0ec93352f92251469924a8292",
+        "report.plist": "ad92176ab18a501e6a1e252cf4513930fe0a88a52c74ec7174e09d31a7ee8838"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AutoPkg/AutoPkg1GitMaster.pkg.recipe",
+      "recipe_sha256": "9a8ec996d0d29ac59efda90a6046b582736bae047af0fd551c8575ebfcc776e5",
+      "identifier": "com.github.autopkg.AutoPkg1GitMaster",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 1.288,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result",
+        "pkg_creator_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "ad51776bf2d8",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "ca0ae51cb1ef81e4f10c3159c1d496f23c32d5eb266983d8e94866881b4ba675",
+        "run.log": "214bd24c2b76f544be1deeb6806d9adff93c3717e50d3d3e75fc46f1b4900da6",
+        "report.plist": "ca8191bdb90677ca79d81fd04cb403540cf83c7277708f3d71782bcbc332d313"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "AutoPkg/AutoPkgGitMaster.pkg.recipe",
+      "recipe_sha256": "e375fed6a2cd4cea2c5e1b9da7dc23613ddd35460838a88e7d549c2e319b37a9",
+      "identifier": "com.github.autopkg.AutoPkgGitMaster",
+      "status": "timeout",
+      "exit_status": -9,
+      "duration_seconds": 900.05,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 3.181,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "186d5ba79fdf4b196956d93c6df85eac56b39c2efcf1767aae10ff35d00fad8a",
+          "run.log": "42780b8d2df119af14b456fd00510296cca477ebf2141315b6de789f0e6aa493",
+          "report.plist": "9ef82e0de7687bbccc3f9734491a3c8d496592246c07d474d00138ac4f8dd31b"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.AutoPkgGitMaster: Processor: GenerateRelocatablePython: Error: [Errno 2] No such file or directory: '/usr/local/autopkg/python'"
+      ],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "a6d422870274",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "7d547244fb499c7bf60497d2a5b2fddfb6a6686aa7b697b0893ebe715bf0cbc4",
+        "run.log": "4d1ced4dd065dcd54f36c9b3a1e0576ee0c1267807dd9a6b334250125746853f"
+      },
+      "outcome": "timeout"
+    },
+    {
+      "recipe": "AutoPkg/AutoPkgGitMasterNoPython.pkg.recipe",
+      "recipe_sha256": "2c22378f4a2ed0cfefdc65de164a426c7d678524d218b98eb48409191912eb57",
+      "identifier": "com.github.autopkg.AutoPkgGitMasterNoPython",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.655,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.AutoPkgGitMasterNoPython: Processor: Copier: Error: Error processing source_path with glob"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 0.789,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "50d707dfef5cf3806a4a1fccf22e5fc9c6b2e2295da4271eea94c3ccfe2eca93",
+          "run.log": "47853e5c111f859d8ae5057e4d19cfd55ca48d3b0a816231ee4d92029fafdba6",
+          "report.plist": "ddbb372ef9800d0f4d8119c34003648ade1e23c8f3198c58bd6970b26962402f"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.AutoPkgGitMasterNoPython: Processor: Copier: Error: Error processing path '/Users/runner/work/_temp/live-evidence/reference-results/eb8e63137493/work/cache/com.github.autopkg.AutoPkgGitMasterNoPython/source/autopkg-autopkg-c36e58f/Code/FoundationPlist' with glob. "
+      ],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "eb8e63137493",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "8deec17aaa21ffda173cb25c862385f32979387906e0f7a0229e28b0d0b91977",
+        "run.log": "9da8112ad66027d0a71c2b5f5cf36e15c13374c060e6bdec9c078702591d362a",
+        "report.plist": "1a84bcd890b49fb565e3e02d24a194ba3909d1683265cfbecbcde162239f999e"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "Barebones/BBEdit.download.recipe",
+      "recipe_sha256": "6d8e8c3699f23f9c0511f6e2d6a14c7400b890a729f688014adb287d3666eb03",
+      "identifier": "com.github.autopkg.download.bbedit",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 3.973,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "18b8c8204dd0",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "56efdab80870d5178b8a333287a212d2d7a783791ba6975d379f311a58f8b5d3",
+        "run.log": "ec513e5df69d833b307f8390b35a2a4a0988890f9fd9395b493b17f6300f988a",
+        "report.plist": "74099eac01bea1099072650478035723df65d4e1cf1878b273af1010efbfd4e7"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/BBEdit.install.recipe",
+      "recipe_sha256": "ff6cc9ab88186a376715d7a7f37c32d8a10e2fe529140d1d501710bd62d67473",
+      "identifier": "com.github.autopkg.install.BBEdit",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 14.112,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_creator_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "d6640e6ce63a",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "3d7032da3e378625125f207190cb2dbff3b4788733044d6243b352d5c49d4966",
+        "run.log": "53d914ac3b4716fab7611260820a10ea5aa67d8b29d962843170395febeda05e",
+        "report.plist": "86efcec35ba893aefc11221414ea98ed1e355eada9c29b70e75e782bc55e11e1"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/BBEdit.munki.recipe",
+      "recipe_sha256": "f5972131331a6ea5200ca41d66c24b67b91b2925f98c4a6c354bc51006fc1249",
+      "identifier": "com.github.autopkg.munki.bbedit",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 7.507,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "0c71d855e435",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "b68bd1a7dee40d65ce98d967052eae07f7d37f8f7d7be3c8e5bf61e2d7eac905",
+        "run.log": "83e2ab9f239525d62047c8681904730cfd0c40d8718a2b6521a9109ddd5f7c20",
+        "report.plist": "a41481c731c980bcd43ef81d08347f2bac03699cc5e4cbbccb5dc7ac986d4010"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/BBEdit.pkg.recipe",
+      "recipe_sha256": "3887d668e6cdfaf599936062513d4490b00709f5af3a0555825b8bda0b5d8530",
+      "identifier": "com.github.autopkg.pkg.BBEdit",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 12.084,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_creator_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "618202a9de1a",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "83359880369e26eee8d9085c595a36422b33685af9d90b36262d8085682b4aa9",
+        "run.log": "e24e8c83cdfa18ee5f282a2551aeb0c535e6c0e0718990474a94366aee29cc82",
+        "report.plist": "6a9452374bd69d6bb53f9559a352f0bcee8a27cdc6d8343fcbea715442b43e56"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/Yojimbo.download.recipe",
+      "recipe_sha256": "7a1613f099f6a551414a40ec95b0539c7672bec4d7e9b4de767c07b0921ca2b7",
+      "identifier": "com.github.autopkg.download.yojimbo",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 1.925,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "4cba3fb31e52",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "8abbf90e7339cfd24c2d4ea8c9f643d112137795c8f50c48e0d56e695efc069b",
+        "run.log": "e2459de008d7c776de5122cbf843a49f6cab669a07bf360fc3fac9dbc08b4b59",
+        "report.plist": "9c3b85b91d445cb8ad28fb433b515137f6e6cb060907370376350a148e04ccde"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/Yojimbo.munki.recipe",
+      "recipe_sha256": "83892ca65f5cd1ea24203c63682475243193e1ca42542b15ac542e8920ffe61b",
+      "identifier": "com.github.autopkg.munki.yojimbo",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 2.727,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "576979995700",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "6793f62ee6222dc328b7cb5a7006d10ffe435763db43e3505d8c9369e4a14888",
+        "run.log": "686cc19933e0e5324427fa1916019f085f081b9fadf0b7591d65560ce2271dae",
+        "report.plist": "200ba0dc8f6d37347e99fa80c4443c064acb112df995700c66ea644d95a6596e"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Barebones/Yojimbo.pkg.recipe",
+      "recipe_sha256": "fddc605106d28eb26e38563c3a4a03282a16d12f1117c016d78bffac7caba57b",
+      "identifier": "com.github.autopkg.pkg.Yojimbo",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 9.482,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_creator_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "b5d7b82e1f16",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "617da338354848de5f0d0175a4c4590cd1f1a1cea01b67136e00170d935db621",
+        "run.log": "8fee813fbc662c037da2c907c4e60f865dfb36dd55faceb83eadb516c28ad1f8",
+        "report.plist": "82f0411684ee41cc28a0d646fc071860558ccd7836f18d7da3673982d18dc09c"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSAutoUpdate.download.recipe",
+      "recipe_sha256": "5daea2e2fac56d03ffa818acef5d066fb80b2964606fd936ac50ca3df8f51840",
+      "identifier": "com.github.autopkg.download.MSAutoUpdate",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.362,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8f5b84e72d40",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "08a0751d8f6f1050b9cb380f1e28a59af9e55955c54aababcb6f09ff12098b83",
+        "run.log": "12b9cc2fb22e886fccf4ad58bd3ac32e40c55dcf9a15ff293d6bcdf1dce78548",
+        "report.plist": "db5d5cb95334de741fbfd14d447bdea87af702a596df76e8b2f5c9757a4b0772"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSAutoUpdate.install.recipe",
+      "recipe_sha256": "707621dd28a433955f03a5b4821140ccc76fc8f33bf5643b6d418f59ddaf322c",
+      "identifier": "com.github.autopkg.install.MSAutoUpdate",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 8.363,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "26c890e54368",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "c7b59f4b974edb218b830b45fc70efa5ca977b9901da5c26dd9f2b4d9e37a5e1",
+        "run.log": "abcddc545ad5e0a92281072eb3acc4fa56b08c26f25a7d4a819f74676f032beb",
+        "report.plist": "653dd9c5595263f7029267cdea4b0a003168b0c7f2d6e80634a2df84c463dfc8"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSAutoUpdate.munki.recipe",
+      "recipe_sha256": "610ba22d80f15dc7a2c84976b91b713281979917d542ed3ce5e83893c863c960",
+      "identifier": "com.github.autopkg.munki.MSAutoUpdate",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 1.265,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "7f4f776d7aea",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "5109e37c394c72cb003c047b049debe861c12832959e29c05b862189068b708c",
+        "run.log": "1f9b5397e80e4f8894a4d7a76fd06a6f35da674c8b35a607c04eee5ceae33588",
+        "report.plist": "1dcd9ac3bbfc09777efccf9a8b52dc9adf230e7cbffa9ee9eab3c8e8635d22c6"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSCompanyPortal.download.recipe",
+      "recipe_sha256": "110560ab1c558ca2596aafee8d901260e337f4e916d539b92d99aab3b2ae8990",
+      "identifier": "com.github.autopkg.download.MSCompanyPortal",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 2.729,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "7a8d43201caa",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "f54d2882062d679415974d5c700f47a2750936216dfe45fe528f37d9c3c20f00",
+        "run.log": "1f6f375c662006df0342e52cf864221ed1e27b00299afe2430c625902ad29c35",
+        "report.plist": "cc202eba6098fc90ee3673d03c63ab962521f91275808695cd58272810c6eeed"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSDefenderATP.download.recipe",
+      "recipe_sha256": "afadb06c332443a1eaf1cbf7acd6200edf56c9ca3d9e103e43b34375668dc465",
+      "identifier": "com.github.autopkg.download.MSDefenderATP",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 30.817,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "14286fad1c66",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "05f9852f554722d918896679026e9736514da323b89199985706293cd8dc93bf",
+        "run.log": "4144414506b6ad1c28b75394054e23877b5b77d835469f5a31a06865a45bfb13",
+        "report.plist": "4f5f6ffa95a9d6f6ec6cc1e10a96986ceff06d4d4396023995d29a5c14610e21"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSDefenderATP.munki.recipe",
+      "recipe_sha256": "3c4bb974d336e733770ecf87b8a0746d3071dabaab1a4c07d3683c195a0848e6",
+      "identifier": "com.github.autopkg.munki.MSDefenderATP",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 14.018,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "2f24b6a5a873",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "642396b22139ea5deab51075b4744ada4cae38d519d17fcefc2942fffd5e71fa",
+        "run.log": "61469340ed7e0052e7ebb42f3ea3ee9f69a07b88b9caf1bdd92f790033b2fa0b",
+        "report.plist": "10cbd71682da046efc74025de353e27d4b8c04c88eddb1326a4cc882c498da63"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSEdge.download.recipe",
+      "recipe_sha256": "78be39fba9cb032efd77c05375ac4c87c6387bc67de05915b705d0c5700c199b",
+      "identifier": "com.github.autopkg.download.MSEdge",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 11.322,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "f9db090f979c",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "eaffcd0f7842b1e0d5da8d1865ce88eec2d21e879ba93d06afccc2810e2504c4",
+        "run.log": "355b0dea1c9f0f58ea1a2e1dd63d7a994cd36b8305847f506327ff304c6ebf8c",
+        "report.plist": "f26906965a301a03c1cf8357eb09d6d9ac42f28b6481a0b352aa88ee89ab755d"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSEdge.install.recipe",
+      "recipe_sha256": "106f4802b62965449f671faa9d9e5403b947185bd1922d10f236e2d172a0b153",
+      "identifier": "com.github.autopkg.install.MSEdge",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 73.299,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "3d8021a4666c",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "2dd8be64fb14b754faaca8d61a8dd835d60005afd56131ccc31e134db72b5ca1",
+        "run.log": "65aaa8cf34290eabe77c61b91b2c58372103c82c4f5a74a25d3fe048fc3f7509",
+        "report.plist": "c02b4d6dde071398006e56ec253b3a34ee27fc12522554b008f9e83089812b43"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSEdge.munki.recipe",
+      "recipe_sha256": "2fc4f467c4e891917c647a82bdfe44206e2ce57252fa4272048fd5bfcb3e64ac",
+      "identifier": "com.github.autopkg.munki.MSEdge",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 7.855,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "2242b0d204f6",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "c5bc1cf5b4e4bb3e83db74efc0c37d976a080084f80bcebee6bb8ad2615e8a9d",
+        "run.log": "425afa5ebc51d2b66d9fc235d2520f1301f6d86f05ea39768b9fa05e4a552b74",
+        "report.plist": "77500d40693ca687dfde0af2f45174d312b87cbf4acac36963a5646586ae4f13"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2016.download.recipe",
+      "recipe_sha256": "5b40e70f99874564574357f40be8bb772d57aa4cb7cec1da5b0d5ad6cc413286",
+      "identifier": "com.github.autopkg.download.MSExcel2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.041,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "fe20b756d883",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "337e11418415c2d78cc7417e34f5bc6f5fca9fbe96229495e8e7d4110173173d",
+        "run.log": "fc860ffbf0617bec4dc0e1a01de11ac53c694cc5810f850e330cd5908c8fd503",
+        "report.plist": "5f33dc735aeeb1ec3fe36522485c3bb254b2219f98b610d640995c2c0b066176"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2016.install.recipe",
+      "recipe_sha256": "4663b89285c979d4e97638a85860990b7b5199440f10384e95b8640ae618a2b7",
+      "identifier": "com.github.autopkg.install.MSExcel2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.131,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "fa6e018f0c95",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "2a517a5ee49c3935091f176bc044ddf4da15954a6e6fe4a5fcfbd02eb52f7d20",
+        "run.log": "09b98714168a56cbe91e88fe037e6e67c854ff8494f4d40d54dc55e926aed97b",
+        "report.plist": "770c44b54893b7f2c95eb16adf965f9692c8bee205540fd9f45aa0e143557d8b"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2016.munki.recipe",
+      "recipe_sha256": "3b94eeba97ca4e33bb6af5523d4d9f12311f13a26ce6c26f57d56aff3bab5674",
+      "identifier": "com.github.autopkg.munki.MSExcel2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.069,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8cb955f669b8",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "6012a09121655ae1e2545a14f222c7ee7f58087513441672a93f0d797f4f603d",
+        "run.log": "f4aad0bcc870e9af470e61a2c7ef74073e61ab1110e9742ee39eb212657616fa",
+        "report.plist": "abe6b726a5b3d4237e1bdc114848dbb5b0918a86575e95cd06885b5580df2edd"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2019.download.recipe",
+      "recipe_sha256": "c1697b085213f97ddbbbb0a30d5c92ab817a927611162ea5994dcb8ec81a2856",
+      "identifier": "com.github.autopkg.download.MSExcel2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 25.274,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "0770531d3653",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "62f4d10c5f9eb235a7db0fa13f8df7829dcced97dd7415b563b1b12351de1c28",
+        "run.log": "6ceb5662374a0616d6557490c819d9af66a568f65cc767237f930f19eead74b2",
+        "report.plist": "37f44516851b3aa785627f3d5415eff4b8a1b2c43967d39b55c8a9f8d10937f5"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2019.install.recipe",
+      "recipe_sha256": "434b9af22f021ee97e21fa3e266c7c7d637233203a4deacec93f04cc03f826f9",
+      "identifier": "com.github.autopkg.install.MSExcel2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 60.058,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "146b0b8a2cae",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "09b688c8d58e52ba6679a783550985bcb2776f9077983ee2c34c02f81e8544fd",
+        "run.log": "a8221fa88be7b899ed87b2d1b39e58a80ad6080864f05f9fb88f32332bc19e39",
+        "report.plist": "5d0f21485389b6ea79fc852cc8a06e2d19bb7336b12f3b1bd778a4ba00d85cd6"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSExcel2019.munki.recipe",
+      "recipe_sha256": "b70b44414d624bb7615e3ac5102a55c93fbc13401ba85694dece0041b5201b89",
+      "identifier": "com.github.autopkg.munki.MSExcel2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 40.028,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8792eb71944c",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "c32a0314a6d541df80180dd3f4dd6cab012a897fd32fa5fd1fc65bec31c6139f",
+        "run.log": "aca189e31b2f37be2422c2465b94a0c204f8a201a66c27fb49fa803dd95f42c3",
+        "report.plist": "ec67e876cb7e59f836bc92de42fe15f579062910c776beedb8f944b01798ab01"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOfficeMacProduct.download.recipe",
+      "recipe_sha256": "76cad88dc761ee26a8eb25a2f57b535a48e0b60c645486d8125766d990a02ce6",
+      "identifier": "com.github.autopkg.download.MSOfficeMacProduct",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.066,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.download.MSOfficeMacProduct: Processor: MSOfficeMacURLandUpdateInfoProvider: Error: Unknown Microsoft product 'MicrosoftOfficeMacProduct'"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 0.395,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "0298c0902ab952f2622f8010d8f15ef12b39c6626a4946861a92d5160bb90b4d",
+          "run.log": "05c3eb3325698499cc726b68d3ae6e2281db2e90980e618190085c718a2ac82b",
+          "report.plist": "b608f27a278d0debdedc503574939792e0956482e25f39da8a5738cc0f259961"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.download.MSOfficeMacProduct: Processor: MSOfficeMacURLandUpdateInfoProvider: Error: 'MicrosoftOfficeMacProduct'"
+      ],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "c61cbbac0a65",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "cd2ea745721bbd6febaa8d0fb4d348508e7c79a456e9b159d6eb16a74ebe7793",
+        "run.log": "6c52094a3c327497ebe586f67901a161bf4bd9f6ace0d6d85486d9e756541d6b",
+        "report.plist": "d8b5ec443628ffc7cda19a15cf3b8b083e7dabab6b9830dcf3a32a716cefc654"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2016.download.recipe",
+      "recipe_sha256": "48510c3c533f3a09a187d5961dcd91861dfae234d46c8591b05f83b2389d82cd",
+      "identifier": "com.github.autopkg.download.MSOneNote2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.082,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "6ee229124049",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "b73da6424182ca7760f12a80da23e68eb393bcd7faddc07b541458e74ae484b9",
+        "run.log": "2e3baec93a9b66be56f7b197b79e58e3a293c63dc9d9616bc7b034e8daf5b35a",
+        "report.plist": "97524453aaebececf47489502192403faa7ee2871de487f8d5f472a5b3ddbcbb"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2016.install.recipe",
+      "recipe_sha256": "518fc69611aea034d57e8fb245a4be8e0558a34f5458d8cbc8f27c36dbf8d57d",
+      "identifier": "com.github.autopkg.install.MSOneNote2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.058,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "058996f98892",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "0c5c16fd53bafaa7215db2fe55cd4e1ceaa8b913b6ed137f1b529cd1c0c9dc8d",
+        "run.log": "66fc84e2ece7750ce4edae7fa2308efc40c61549e310025bad28f73844858e8f",
+        "report.plist": "f280bd4882d902cbdabaaa621f7563a950a3b6fac45881339e7e8d6c2007aa81"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2016.munki.recipe",
+      "recipe_sha256": "668a926408d61811fde925af5838b04568b5225d701032e61cffaebe774ac35e",
+      "identifier": "com.github.autopkg.munki.MSOneNote2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.08,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "e3b70b706808",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "1553bf197c4cb5f1489053d3b49f8471be5856f7fd9f72cc824d3f8261662802",
+        "run.log": "241f7357c0c0ac8cdef240598a8f66a84f5b2e8d4899186e060d2554a9922cc4",
+        "report.plist": "8188643f332af58bd1a39b3bdb956a5979a66733e787ad35c5bdc2f9bad5cafb"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2019.download.recipe",
+      "recipe_sha256": "48dd5191a217b789139a269de1c8f87e8b23677c6c879b9e29a22f6f7f99943c",
+      "identifier": "com.github.autopkg.download.MSOneNote2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 6.223,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "aa6000989a39",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "3f3fd385a69287e14883f037c84427c7e9af9945d6a336b809de336baa9da1a5",
+        "run.log": "549abec5ab4b2ebb724bfc54b6ab09a9b5b367f2b236f5fbaf62443d31d64824",
+        "report.plist": "c1c11a898055a3ebd85fd178f9378910e7dd4990082c066fcff00450bbc4e3c0"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2019.install.recipe",
+      "recipe_sha256": "2c65de9249d6e9fdbf22603a47036b15c7f8a6757ddbba12da84eeb807ff7115",
+      "identifier": "com.github.autopkg.install.MSOneNote2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 22.904,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "ebcf69782ade",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "5fc392a00292916f31f9791a3440b8047dc82c91dd0ce9fd62b56fc9df4ba24a",
+        "run.log": "9c8bd0c95054b6d2e549d4f42686a127026e86aa3015d5a999996bcc4a113dfc",
+        "report.plist": "2c26614ad2fc2c407228bcb542faefc8b0e1b72fc00bce01643e88dd2d8253e0"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOneNote2019.munki.recipe",
+      "recipe_sha256": "7dd72df1ee667e19188c205391e617f39c9375944255086fd194882355d7d824",
+      "identifier": "com.github.autopkg.munki.MSOneNote2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 15.597,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "088ed4226b2c",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "5adeefd6867b45911d5f8c311d83ac85138fa52b4bf5b843c8262e4091b9d680",
+        "run.log": "5181c54adefea11542a6602b526d1c04d19956e83a01c8442b4b5480726ccda6",
+        "report.plist": "d52991fe0703c44eb3941308a43d819e1a634bf2f22b140e111fc73955cc4391"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2016.download.recipe",
+      "recipe_sha256": "f911bd825e8156005665d620411355a4755602d13cf908403bb557162848b77d",
+      "identifier": "com.github.autopkg.download.MSOutlook2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.05,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "1d6120e67777",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "cd937b577ab6f8b469bc4962d2d34c3dddfd3be7c68097cca9528346d2178ae7",
+        "run.log": "e5b02d7a649fe51ce6d7babc284f15196a17dd6a2103cd6b250dfa2ceb2e52e2",
+        "report.plist": "4bf4cc2cbd722ae7b034f6195fac9cf8f236a95f5ca76a3f6f1fed89a14cdd77"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2016.install.recipe",
+      "recipe_sha256": "df249c81c10bef1a6131a5ad46f933db73969d405b0fb51eb103469936c64a49",
+      "identifier": "com.github.autopkg.install.MSOutlook2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.055,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "be671240e518",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "5d95cf9d95db8040a141e9a85b9e2375c0ac79e064abde26728f2525c2bb83a1",
+        "run.log": "ef936fe7ac93ef67a2db4a6e810cc0990d6168c4fc684e85fa73b44a903e27d6",
+        "report.plist": "975168dd7cac0a13176e530fabe4c3a01a821547a0c07329894281388d387393"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2016.munki.recipe",
+      "recipe_sha256": "db640e74166b4453dbdd24faa1dbceb1c5f8d5f6879294f2613321a0f8303539",
+      "identifier": "com.github.autopkg.munki.MSOutlook2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.059,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "a1fae3fdd21e",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "ffbf764ce8b13da5975b1cf58f92a761908c9a36b5179878dd874bbd1804221c",
+        "run.log": "528ddb82676b04756972f28dbe3e739ffed3d12906a8d44b2a9b4191ebb56f7a",
+        "report.plist": "ddc66f6e900430a0485bc8133480ba6bb07c863f084b656d7fc2544cf0f6267b"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2019.download.recipe",
+      "recipe_sha256": "ac0c375fad178ef544703c8a9516b47c5f67a1f6a095a04fe2ec442589b6b253",
+      "identifier": "com.github.autopkg.download.MSOutlook2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 13.811,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "a18a800695b6",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "42c83a07c8baf50e4d1999c2ee7d90233afb2b53c09d1977010b1e4b1381ae08",
+        "run.log": "a2be3a9ba038c521c181f0ed5351ce68ab89a7ff6155d1eafdca0e6a1b4d6553",
+        "report.plist": "8f469b1f4eee7784c99a1d045dcd2a2d1cac906bd36966daa1cec36c832e77e2"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2019.install.recipe",
+      "recipe_sha256": "c86f3f852f67e71132be55fd729423499640e031b4af037fff92bbef452ca6cb",
+      "identifier": "com.github.autopkg.install.MSOutlook2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 57.758,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "470ea9485594",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "f160833c65e604ae5df92ad2e51f2812ad6721b720a40edd330e6671b7ee6f66",
+        "run.log": "6d6e8012199ab297394a3085c9bd2a7dbd7aa714fea57fba4093c6b6981b627f",
+        "report.plist": "97ba7cab92c85425da757ad9877c05116e5f6d85070fb98c6bd2d7e6d7217552"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSOutlook2019.munki.recipe",
+      "recipe_sha256": "f0e94f7fe10e21029bf270c006b1b5deef26c390749354764f5c992d93780cb4",
+      "identifier": "com.github.autopkg.munki.MSOutlook2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 40.287,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "7003f6f0b792",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "b35fd461cb624bdf4a048549a5e4d9c857736e0a6c60e0b9980989d0a8bb4002",
+        "run.log": "f13af2ac22237bfa8c1d1bbdc3eca7a1585ad62a6211dcf9c2bc24789069f006",
+        "report.plist": "86d85bae40ba8bea25359bf0a3af2dd837cb6e71404c9edfa3822c4b102d0f09"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2016.download.recipe",
+      "recipe_sha256": "46d0ffd3b5d6a607dfc7a186ee9fb838ab74059f069d0f154d710dacbe8df188",
+      "identifier": "com.github.autopkg.download.MSPowerPoint2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.043,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "f537bef965d3",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "278491e566207203de5922829cab459cd9b9f664ea22d5c1a9b26468ea0971d4",
+        "run.log": "5f940edbea0626e71c248cb2ef7006e6e88badddcb5f162e33d1723d1aa7b770",
+        "report.plist": "c505d7a03f50507cf6e603fa50022286376634844e644f5b286d32ebbedea9df"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2016.install.recipe",
+      "recipe_sha256": "8f61ecba8110667bed83552423a62b7287960893f058f4b4592aeb66de8a6273",
+      "identifier": "com.github.autopkg.install.MSPowerPoint2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.159,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "fd41c63bdb21",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "adcab8bd7c02699d5e94c24e8e6ae2d892399e3ceff09fce6553feb9fb31c973",
+        "run.log": "be8bcaa60f36154c5ea0badd79f3b9cc0804d815a7d1c2d7e9d4b25d4d1c87a4",
+        "report.plist": "f40700ffb3575d886d1e71ee955d44dacb6d997d53b01b9d64d836623a0b5ba1"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2016.munki.recipe",
+      "recipe_sha256": "1c0ca3fbc842f04a2d3532ff71f199a3eba194aab708b5d118f24b217a093677",
+      "identifier": "com.github.autopkg.munki.MSPowerPoint2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.054,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "23f67fff5674",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "17137d1b00a091a136a455a72ff61ef75f55537db523eefad9fc58075718ed1b",
+        "run.log": "fd7b6c11179fcbf0c3190e022923251a8b6582b5e63604aeeb0d46d1dc9a9aa5",
+        "report.plist": "7ffa752b1aecd37a9a23a0779c3d565cba39ab5356d4480b20b6a9ec54f120e4"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2019.download.recipe",
+      "recipe_sha256": "77b896c84b9fe7c1b0f7933fa8852d6456933b5a6ded57b8ab185b04934d73a1",
+      "identifier": "com.github.autopkg.download.MSPowerPoint2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 9.506,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "aedf2488f7a4",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "c17dd805842630cabe388a681498a9e8e7237441e209355dec71b2f60e3b369d",
+        "run.log": "c6def14f9b88247b0b24d2354fab2fed7b014335103f313150be15b7114ad5ab",
+        "report.plist": "ac6fbb5a2c219bcf3a553429697dfcb32e8d351556013d2c3bea941a853559ae"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2019.install.recipe",
+      "recipe_sha256": "d92d00608f0031baf4f9eaee0ceb633693790ec44728a2bc7e87dbdab679b951",
+      "identifier": "com.github.autopkg.install.MSPowerPoint2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 49.762,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "e27e4832a22b",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "1985ee0b26a629b756ace04d129affb4a7e61ac7042306d56c8a9c5a07a4f0e9",
+        "run.log": "163a7497884ddc61ded05157068b9305cf2153d4ca2a7792beaa045728f828ce",
+        "report.plist": "d68c634597ae188de984bb41eb3e1be1119a48bf9042b4efad4195fdb903cfe6"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSPowerPoint2019.munki.recipe",
+      "recipe_sha256": "08aaccd31bf66eff7ae9b35d93e889be62d96c04da462d27daff4e376b05dd80",
+      "identifier": "com.github.autopkg.munki.MSPowerPoint2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 37.077,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "31a5025a6013",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "7dea9650ef2c370995891250c9ffc149b0deab1bb15751c3c7842ca59eb726e5",
+        "run.log": "34a482c0600bd940d971ad99d6dc1cffefc13a337586e726cdf8d3963fc6c538",
+        "report.plist": "2a6251459950856dcb78ff27911157efde3be3de859fc4398661e8e1dbabf491"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSRemoteDesktop.download.recipe",
+      "recipe_sha256": "14d1811a200277f030c3b3595d4e72b176edf83d25500240b8aad6033e3f864e",
+      "identifier": "com.github.autopkg.download.MSRemoteDesktop",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 2.92,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "084909567f9c",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "dbb9f02d5216ad4f560291151b233bad128e0160d25584d2e3808a681a3941df",
+        "run.log": "91d4f3235e9f2109569aac46ffeac5844d8c859e6b5e708d4fb375eacf77940c",
+        "report.plist": "dc457c1e9a494745c14030d97af028fec35dfc7cf03968d350a37c8c204d6bfa"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSRemoteDesktop.install.recipe",
+      "recipe_sha256": "19bc70a17e91d7c93f8210459793fd5fea60c0c675b69005f53dc8b5fe7d176d",
+      "identifier": "com.github.autopkg.install.MSRemoteDesktop",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 5.121,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "44b562fa0af8",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "f247c06277aaf5cfecf261f0ab2d27220058648930ebd4cb95ecfb62f7b68b90",
+        "run.log": "dfe196fbb2712044201ba5857c07c8c3d4ba5cb5a9761a6e84e2d0c4cebd4c38",
+        "report.plist": "30d24d72db17f3d7f9a7e24089b537b81f42e188374a623b0166ca147fc9360a"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSRemoteDesktop.munki.recipe",
+      "recipe_sha256": "a65e933417ccb03b4e91725a4ae0bdafa7443acddbea44f7420b0304d4c4638a",
+      "identifier": "com.github.autopkg.munki.MSRemoteDesktop",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 4.735,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "b7f25c9f292f",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "9c3a6e383f544012bb33eb6032ea2ae67489319570cbfdfa976672420870dba8",
+        "run.log": "6b66399f5ac384e1d1481ec8ff2dd39d78fd36ca8a4d9f78c5bb72895bfbbcf5",
+        "report.plist": "661ed8d2c40b6a13e7c1316518a411d0326f18852bb77b3bf484069645afb839"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams.download.recipe",
+      "recipe_sha256": "dc1af6ad55e7e7c38327fc64a2d52da8f76e16068400e16de921772297fcb0ee",
+      "identifier": "com.github.autopkg.download.MSTeams",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 9.662,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "728b12ceb6c8",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "1548e45843bc86892a3c7e24c2912206c6060122bece400d8d8a64053d415095",
+        "run.log": "c7ecbe562fe7bee49afd922767cd6d300b5d936b786c12cc4b9475f001917922",
+        "report.plist": "0f49370e1686c8e8578080438b1da1ce7bfe58d97f6660501a9dc442332cca99"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams.install.recipe",
+      "recipe_sha256": "c0601c14c15cf251cee774c5e6d85aaad36e5b96e46992cdc67c09fae1963e50",
+      "identifier": "com.github.autopkg.install.MSTeams",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 40.687,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "940bd1180069",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "829e092e8795efab7a126f456f881e6ca9db9cb1290f8d5d71ff7608b3e77f5b",
+        "run.log": "cb927246d200c6506fb48a2878726e931b05a2f67525c6a0bcde2c8700457983",
+        "report.plist": "88a7cf3175b68f361e2226aea7fb2e0ced66b82e842e82783612a20b6cd9aef0"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams.munki.recipe",
+      "recipe_sha256": "9b3e606ea8b7779404e3f78c8b19da85b4bfa6b55756ebef5e360b446e5e21a6",
+      "identifier": "com.github.autopkg.munki.MSTeams",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 4.838,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "5c7779dfd692",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "f137e53289e884c50b5c29268ec025d02d79099114d20792d5018dcc821dacb8",
+        "run.log": "a71322d1cfbbabc88480a313de84edd0cf1daa5a5c534f12c9a7dcd98eb69b13",
+        "report.plist": "d3fcef0fa49d080acd23d42e21275ddaf408ab68579884f8ec69ca1f26f3bc82"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams2.download.recipe",
+      "recipe_sha256": "45c17a85f411e3f761f0360474dfa22deb9452fc20092a1df528ed3d0ec24e1b",
+      "identifier": "com.github.autopkg.download.MSTeams2",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 4.388,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "04ed0e71613b",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "7ffa6ce4e8410833b13abed8be0e5ebd32d528839b5278bed1f3bd9adbc4712d",
+        "run.log": "dbf811f55b7ea84944ba061f2263bf91f69452fac22d5fd059fcc4ca826d1527",
+        "report.plist": "0c587cfa2970ac99504165d92597ad1b8a4ce11539aa2b66e73d714335180216"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams2.install.recipe",
+      "recipe_sha256": "fb76331904bc3f19002cf70e3cfadf6a1c14090ee05ea8e39d63d8d5d30393d6",
+      "identifier": "com.github.autopkg.install.MSTeams2",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 41.847,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "eb7f31b66e76",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "bf0f2093ab6fe0375a8bf3345feb9080cf3e01c3e61dfa2e273872aa062245bf",
+        "run.log": "4d7a3f146b3f569998437e4ac142851511703467b6ec899506269beeac9f9c28",
+        "report.plist": "9972cd6ffea4776f8f8b80cc23730da256b2538e97fa43d726dee8eddb795f59"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSTeams2.munki.recipe",
+      "recipe_sha256": "90f9944a89e236c7a706358299713ed4612a3ed2e426a12f5eb9acf3b124bdf8",
+      "identifier": "com.github.autopkg.munki.MSTeams2",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 10.035,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "77e9e1c03341",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "a2e184e9693723df813ee4a61b07ec4d95b797d6de67978275a3be34b4f83e0c",
+        "run.log": "c7c738c72392c916e2eee9e1d3e663e38fa9d8113f35aa983b40e3a424f36f6e",
+        "report.plist": "5a1fc92c8065fe2d0872705590336a0fd0803fa46bb1057f34f7054a7cc2ee5d"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2016.download.recipe",
+      "recipe_sha256": "5a1fe166a23480a2d88b2383ea098e0f9ecd2668aea3ed15fb03b0e2bd27847c",
+      "identifier": "com.github.autopkg.download.MSWord2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.091,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "4a56924d87df",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "b99bdc5a3b4de61c0459f3be79c024a07bad2b0edf5e1c929717f2f6e35cc393",
+        "run.log": "736af5f4125a9208671c232ffc6c17a0f2114b014a2f01b064685c5311823928",
+        "report.plist": "94e4d5b80bad10d09467992a4b22cad38f4a571981d5dd092d09828f8ab28057"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2016.install.recipe",
+      "recipe_sha256": "1097d6e7dd190dd067417d8cb13ef84f1f8878c3e674a6f12b341d3c234c850e",
+      "identifier": "com.github.autopkg.install.MSWord2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.457,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "23ff452c2777",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "f2dc4b5cb5da6ca2eecc8f47c094988d25f17bad4689cfc4e6d78668131c8c39",
+        "run.log": "73ebe243ba7dd6640110e55f3758e923f134fc71326882b006379be641b4c7b8",
+        "report.plist": "8f51dd7dd55fff5a5e62d6e80a50d933488b49bf85e1b04b163eb80b5cae8182"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2016.munki.recipe",
+      "recipe_sha256": "49ead94e2b1aa367dc8cf14c0a9bc4b1ab347bd9f4cc2d1d8a39e8599140cc53",
+      "identifier": "com.github.autopkg.munki.MSWord2016",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.07,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result"
+      ],
+      "office_2016_stop": true,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8fc536af3075",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "a917f42631b6b56c90ec8a95e4c6d4d062acc00ebfaa6c45f59a2a2765dabff9",
+        "run.log": "198e807c72fc5e7c9fccd9ba70715a900af7dba84774550cd2a992c6554029c6",
+        "report.plist": "305b060d8036b6b00f9317aa8736d2cab73ce0013007b9c40026e352b67b8ed2"
+      },
+      "outcome": "deprecated_office_2016_stop"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2019.download.recipe",
+      "recipe_sha256": "8783c03a4fed9e261ec31068019a4c7ea2551a95b4e02ac36f682f4612e97b39",
+      "identifier": "com.github.autopkg.download.MSWord2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 50.462,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8e0a8954aab5",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "56b1e68ad40179f472af2145a48a3f8d5fb4ec67de058c54b685f50be9ca51de",
+        "run.log": "6ff9dca30d40505925945524e8e6e14f6863aea46540f273116aefa5c7a0450c",
+        "report.plist": "91fc8c93404d7a3fa499428b2f627a0cfa1efa5ffef216d92f1d447cd18c16be"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2019.install.recipe",
+      "recipe_sha256": "c162e1e87066ab50ffdb43613eb41a4853602c6545fa7343e77aa7c1e90ae91e",
+      "identifier": "com.github.autopkg.install.MSWord2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 44.871,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8871cfec5510",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "5fdac88f6373ea398260ab571e2872d6dacddef032787fd67508f6affddf6391",
+        "run.log": "d764d5e6379839bf314e805da5cae6b8023682f2b6a2c4cd1687d6dacbac65ba",
+        "report.plist": "9d0e08d59ddf3e71d3da56e4b34e1edaafc31cd20796d64e78f6b9c63bdc4427"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/MSWord2019.munki.recipe",
+      "recipe_sha256": "0c1a7a0ba9f3050e83517fe088154a8b8cd0a46283bd6f954c4f0e8d2b5ec0d3",
+      "identifier": "com.github.autopkg.munki.MSWord2019",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 38.482,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8f14f51e20f9",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "3ae1098b62f5710233d38774deb4b9285612a0b79e3852cc42840b7b96925523",
+        "run.log": "b3cafc6cbd93067b9a5059fe39361e69bedbf33bed15e2ea0b814441d130252f",
+        "report.plist": "387ace8a95e13c07336332768f8ff87c198a3c85633e84e9b96dfe9ec1e100e9"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/SkypeForBusiness.download.recipe",
+      "recipe_sha256": "44fac973192e9a739325c8b9b04624156b7f495504e29296dd1f9e2aa5a2dd83",
+      "identifier": "com.github.autopkg.download.SkypeForBusiness",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 2.282,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "0d8dc5d4c158",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "0ac2933080075a9b23fcda2e41066a5358b728a140f0f03bc5673dbcfadbd03c",
+        "run.log": "42bf5ce128ae7ee44651b8fe06c9cb9f09282ca0e15d47d3b33b4dea7a883dc4",
+        "report.plist": "8c69915ac0052ba0583d1c595ec4c9b9812d3b9551a7d539a1d0a0fde90ae75a"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/SkypeForBusiness.install.recipe",
+      "recipe_sha256": "e1f49bcffa4e45fa458f4ee50c1593dd47383d4e8d7d798a90b521e2bfc279e1",
+      "identifier": "com.github.autopkg.install.SkypeForBusiness",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 9.553,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "installer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "d04f053ac9b9",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "074b432f4c2195314bdfe367255647f6b164fc638dbe57dbf118b35f9e0b9e2f",
+        "run.log": "9d88aec49ceafcecb621890d613c0e17a55bf04200cfd12c45f7cab28cc68994",
+        "report.plist": "c1ad34f6c8724c87a2e4e802f7b1321b22b130b3349e55991f72f4bcf5f30ae9"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "MSOfficeUpdates/SkypeForBusiness.munki.recipe",
+      "recipe_sha256": "49c56c873524cb974d742634b2f48ac672938fe0dfc7ef4c2c0f70404f4bfffa",
+      "identifier": "com.github.autopkg.munki.SkypeForBusiness",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 1.904,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "f8914bf9f79f",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "dd5cbc9f4e6198c8d4f41aef845a8a77c6f940fed618df2c356834b903c9655d",
+        "run.log": "d7c8181f329a82893fa24c388b49d879f8e80d61206f643053a77884f0e7c554",
+        "report.plist": "d8a79d1ca2de99afc4e26157a2f80df1b966797d88d606af4cbe9615b3fc4cca"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Firefox.download.recipe",
+      "recipe_sha256": "6d17ddeb226c88af7b4bdef7f981634f2da18403e0ebb86afeb5cfbdf4dc5237",
+      "identifier": "com.github.autopkg.download.firefox-rc-en_US",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 22.57,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "2e959ecddc26",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "f3b7b80d8f8501145ccc46025ab5d9f3bffc57956ae37b1e9ef6100b0512311b",
+        "run.log": "139b34b86cae98b0aba2db2e8687e56ba9b657ec6679a741d5f481b8bfcad196",
+        "report.plist": "9beb6d654ac67ec18578387156f97d0d37668e6cd5421483494ae66386069eda"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Firefox.install.recipe",
+      "recipe_sha256": "d679a92e5ba72a3cbeb679216e0fbfc9ab725fa64669ab5c33308f88be077de2",
+      "identifier": "com.github.autopkg.install.Firefox",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 32.352,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "install_from_dmg_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "fb5f4f123cb4",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "8fb2af65cf94d1f224c5bfe2b1b8abbacd1c5599df5b1401792eb9ec3bc31caa",
+        "run.log": "e1f0fa63ed880db0faa17c73f8fbd05b2037f8331ec06f05e82b0fe0089be8ab",
+        "report.plist": "d665ea051c034b3218c8609f6e986702ad529faddcf95385bd1dfae8072822c9"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Firefox.munki.recipe",
+      "recipe_sha256": "3a7cc5c6a4f3a538f1188261667b84e3358c5b00dacfbdbe9615df1a5b6bb715",
+      "identifier": "com.github.autopkg.munki.firefox-rc-en_US",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 26.03,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "4aa51fddd366",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "b6a6284bb4ac485a29a44e2c166c061f06c8b48501a33c8c98b4c7e96680cbc3",
+        "run.log": "45441d550564ba177b0346fd7fd68bdef8bffc886275dae0b1bd421af6378833",
+        "report.plist": "a7a43eaa9dbd53d9f44bd5b13f7d01637957a43c7da94fbdfcfdf94ad7cb88c8"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Firefox.nupkg.recipe",
+      "recipe_sha256": "6d23b60e4141550358b5e39ef3f2dd3a639110b1124d480e619f4899d8c2799f",
+      "identifier": "com.github.autopkg.nupkg.Firefox",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 2.14,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.nupkg.Firefox: Processor: SignToolVerifier: Error: Authenticode verification is only supported on Windows."
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 1.523,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "992c8f917bb9d3d96d6f7e9a59e81539e80fa5172d1eb06b98b54c4f1288e367",
+          "run.log": "6c666480dc8f3554a7f47511d5e29c0adef882cfa0add59941f462b48a539dd5",
+          "report.plist": "b150e27be1ff8781eb83bdcc588137ba880c0df5d06e8f75994843c0ccc97a1b"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.nupkg.Firefox: Processor: SignToolVerifier: Error: No signtool_path configured. Set signtool_path to the path to signtool.exe."
+      ],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "4e736889c4e8",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "73beb532237dd836599c56b2a22b64da33b7997de037c69213b3da815ea5ef5c",
+        "run.log": "ed795f90ea715da2d1d05800f4490212dcd381f28ec3a861c08059af82d191ac",
+        "report.plist": "91ac5b1f28952ef2b87b0a959d392eca53d21fe88991276cb0e8d246ee7e0f50"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "Mozilla/Firefox.pkg.recipe",
+      "recipe_sha256": "b82fc0f8ccbaaac751e118adbc2a418f4a334bf833e0316b8da90803dd93c553",
+      "identifier": "com.github.autopkg.pkg.Firefox_EN",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 62.696,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "pkg_creator_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "433d7f543ab2",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "8256cb9a669378d12496fa290befcf8cab1035ddff740a06d94a0dbec37c742b",
+        "run.log": "5fa0881f63ee3fe731fd07916b9e7bf84ccd5f324456f9f2b1a0ec57ec381661",
+        "report.plist": "61c85f3f080e72b0cfd094903e2ff7a7035690c64ce51530100954c5e5f87cb1"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/FirefoxWindows.download.recipe",
+      "recipe_sha256": "8ea93aa3710d76d2e1c588a5b417f510b64ddb32b8e55655b7db5de17e52c95c",
+      "identifier": "com.github.autopkg.download.FirefoxWindows",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 1.374,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.download.FirefoxWindows: Processor: SignToolVerifier: Error: Authenticode verification is only supported on Windows."
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 2.813,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "41ed3c412924d541ceab3c49e7c39ad939ba49b43d5fb9cc25515d779773cd80",
+          "run.log": "320988b0ae56e2520c80722adcd866b82464737a9263fad9aa2e267c600fc9d2",
+          "report.plist": "da85a9cb0aee2a06876c0b172c180c8b124c7edb44507e493512e7badf8fa511"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.download.FirefoxWindows: Processor: SignToolVerifier: Error: No signtool_path configured. Set signtool_path to the path to signtool.exe."
+      ],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "91fdeeaa79ca",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "f3b2a49101890238b860f704628c9e1c665c3eb3477b35d2b5a866240ef01407",
+        "run.log": "8a55d0108859f0cbec7b74fc3aa7f18e701229ec280f58f897973f5bd17075af",
+        "report.plist": "a0c938ee6017e5e621e8850f5dac9b8865b3afa22883b342a74d1ca6a17e20de"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "Mozilla/Thunderbird.download.recipe",
+      "recipe_sha256": "55706422a0641b55d9695e6ff6997234a600527ac8e7020ca9cf306434b58de9",
+      "identifier": "com.github.autopkg.download.thunderbird",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 21.901,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "7975314d3527",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "1231912640108cb94bbaeac3ef22eb235dd210074403faf1e4801528b47d5d7c",
+        "run.log": "577e242ae4dd30ee6a57376f541b944b3c312eff4f49cadb9ff095e988dcf6e4",
+        "report.plist": "5cbdc022e813d34b893747b2cf208164a852f385a5fbd330a9404a95585b16c6"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Thunderbird.munki.recipe",
+      "recipe_sha256": "33d0936a9006eb59d9896090397c7a0cc222eca276d0f6cb8984a1f2af922792",
+      "identifier": "com.github.autopkg.munki.thunderbird",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 26.13,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "79c1b142c4e4",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "35804422f3d611bf0e0579753ea2a2df4d37c16f91b34b4091f8746df5c697d1",
+        "run.log": "e4fc2259d35686e0c05cc03433e36b5d10e3f128fb0eba9af1c8ecbd28172343",
+        "report.plist": "652ea0bf5c4ca6bae6fabe0ae731112023fbe98c77e214068603ae64b2431650"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Mozilla/Thunderbird.pkg.recipe",
+      "recipe_sha256": "53ab0ca7148ad892e08daaf7ab942042c92d30d3fdcf68b3757873d3d8385b99",
+      "identifier": "com.github.autopkg.pkg.Thunderbird",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 67.279,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "url_downloader_summary_result",
+        "app_pkg_creator_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "638db649fc3b",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "6fa44cee15b87311c029a331cdc548a0a9d3baa7afd71f6e1825b60aa79b1583",
+        "run.log": "b934bb80eeac6a482c533614bc0f5d3a2719ec2656c202c1978a68a6f3b55622",
+        "report.plist": "7203c6ec0fd55673135c9a27f77c21241fa571c885492f9a0544f3524bf7b99d"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Munki/MakeCatalogs.munki.recipe",
+      "recipe_sha256": "0cbabc78985dae22f900aa9598002473a91a2a217cae407a319769be33545520",
+      "identifier": "com.github.autopkg.munki.makecatalogs",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.097,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": true,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "e9770615e126",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "b5334271dbc9a34f7dd7d43a1951ce7b96631e4f295e33c9906d1445b86564f0",
+        "run.log": "b80a2c68abaea33e245ebde887a37b167b801b184b4b0355be367364b5e5a01a",
+        "report.plist": "ba5c1e3eefa7eed26178a06693d2896495fb443c5bb3e0e7f7aef317e0e27103"
+      },
+      "outcome": "catalog_skip"
+    },
+    {
+      "recipe": "Puppetlabs/Facter.download.recipe",
+      "recipe_sha256": "40cbe16325510709e3cbe2a332aba819f59fd7a75daa1e57454d4145163837b3",
+      "identifier": "com.github.autopkg.download.facter",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 1.96,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "92ac14063d74",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "501f902ebda9915a949fe790f90df0437e757a62a0e26781cab393e384854694",
+        "run.log": "8c98f09e9eb4cfca2fcc6d7a4f0150607397a175b67b80021d83def7f969afcd",
+        "report.plist": "3d06166b4b21ea1908ca2c609842aa7e6099993f5ad3dc7772a0eb2b3bbb199a"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Facter.munki.recipe",
+      "recipe_sha256": "e560ed2fca41c34eae3e36249e465be74f05c0f4fd52978fe9e62c7d31f8ee46",
+      "identifier": "com.github.autopkg.munki.facter",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 7.234,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "f6750df31eaa",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "0a505101efd3dbd84ebe9abb719cb66ff4a91f72604b4a86a19000108f911796",
+        "run.log": "be3054b6b5747af6f454e9ccb355925efad0c48507c619151ee5cb5affdfc5a3",
+        "report.plist": "ca743ca85a5a74ef0be6cd2f794c4b17b060f0c21314fb850e459fd26a4668c2"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Hiera.download.recipe",
+      "recipe_sha256": "51cb12b4d96d6284698961d962f71846af0f900c6bf4c2ff9dd36c3cadfea9df",
+      "identifier": "com.github.autopkg.download.hiera",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 0.758,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "92deaccdbd77",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "95c178d673e3a6f336fbbb9a557b2765e50eb4e563d2c8e00679a333a95ea6e5",
+        "run.log": "7096fc0540b58885bf1906c7f597b98922d6ce7e284d020b7f1d2f289273a591",
+        "report.plist": "c0a01f4d566a9de5b1df45ff98e02a1231a2ae0dfa12f85f509ee4369b7cd2b2"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Hiera.munki.recipe",
+      "recipe_sha256": "dbd73a99afb8b246fbedad64f95325bb8c678844b7527f544c21df81072d1d54",
+      "identifier": "com.github.autopkg.munki.hiera",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 2.881,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 6,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "ee29873059a5",
+      "artifact": "live-recipes-6",
+      "evidence_sha256": {
+        "result.json": "6573d752b0700d4bbbcdbb8352c980dbe0924bfbac330250291ecf3993ac424a",
+        "run.log": "ef229c6292fca293dc417b9e664b0e976b14b7a9e9cc0af3fd9d4b46f6820fad",
+        "report.plist": "198311e742ad8ed7c2fc23867502e8449f55573e855878edbe3b37e969babb3d"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Puppet-Agent.download.recipe",
+      "recipe_sha256": "f7e65411c2992ffbabd6e02aba8e8b40a06f9a84eff131f6cb158b4dc1539a1c",
+      "identifier": "com.github.autopkg.download.puppet-agent",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 6.946,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 7,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "13db7f036b11",
+      "artifact": "live-recipes-7",
+      "evidence_sha256": {
+        "result.json": "aa3172d7671b6d6902027969205d1d0f1c90eb9be37500194c6a813f148590e9",
+        "run.log": "c70eee395687696e3f0c9d9e49f5b7c9a8a19906b7b9b6ac515d88dca7fbc0fa",
+        "report.plist": "647380a76c5e10b04ab49fca716b54a37b72358bf99da78cf10bfab81ce381b0"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Puppet-Agent.munki.recipe",
+      "recipe_sha256": "1f2da96afe5adbaba121524cc6f4fd82408193a91298158943d7a2bc87297be5",
+      "identifier": "com.github.autopkg.munki.puppet-agent",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 5.609,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 0,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "edae85df8b19",
+      "artifact": "live-recipes-0",
+      "evidence_sha256": {
+        "result.json": "cc0544c8776fbe25ca98156f80c483da38483d6702fd0bce028a6365e2d038f7",
+        "run.log": "beb855472bad6dc63d6bbb5485e13ca899b1102e2effc5aaf3074d21cf07be66",
+        "report.plist": "a055e9314fc4dc2a42f7f44f57eff9fdb8bec0a53331e5e15b6f8395d4b55bfd"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Puppet.download.recipe",
+      "recipe_sha256": "cb221da6199f9df050944e1328a3d405aa5b1c1242f7927047db21ddf36fbbd8",
+      "identifier": "com.github.autopkg.download.puppet",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 4.226,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 1,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "ef3e39ded1f7",
+      "artifact": "live-recipes-1",
+      "evidence_sha256": {
+        "result.json": "9c9667ecbbcb181544928e2d0ddc212b1bc2732ed7a0f00bfad50ef80b9d74b4",
+        "run.log": "cc10dd4cc92befa36df07e3897d966b08ebddd478a781d235db57e409ea08ade",
+        "report.plist": "b7e697d0d1c5d07417c2e5eee58b599b7e82f89238afc9c53159b6070acd0e05"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "Puppetlabs/Puppet.munki.recipe",
+      "recipe_sha256": "a879c8ed7317599a20c7f66e864d8e690e0ed3f2d55e336b02b1df0d0995ef70",
+      "identifier": "com.github.autopkg.munki.puppet",
+      "status": "passed",
+      "exit_status": 0,
+      "duration_seconds": 3.986,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "not_compared",
+      "summary_sections": [
+        "deprecation_summary_result",
+        "url_downloader_summary_result",
+        "munki_importer_summary_result"
+      ],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [],
+      "reference": {
+        "status": null,
+        "exit_status": null,
+        "duration_seconds": null,
+        "source_unchanged": null,
+        "mount_cleanup": null
+      },
+      "reference_failure_messages": [],
+      "run_id": 37572245613,
+      "shard": 2,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "213b2f1dbe5d",
+      "artifact": "live-recipes-2",
+      "evidence_sha256": {
+        "result.json": "642a8e2e6900ceecd05275d7971eb32626f1707c0ce02b0ea65688d54acc8175",
+        "run.log": "f6ae8421cb7096abf820fc7c55483e76cf39dfc6efac12d18912c047685b8b2f",
+        "report.plist": "36658b2302bbe5641104594e0f290f6bdc86469cb53f98d0d0a512fac72b005a"
+      },
+      "outcome": "workflow_completed"
+    },
+    {
+      "recipe": "RelocatablePython/RelocatablePython.build.recipe.yaml",
+      "recipe_sha256": "54a8228c0ecc0d99c5e01879e999bc8d0fd27444e35773d03579e9656f5f2e75",
+      "identifier": "com.github.autopkg.build.relocatablepython",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 424.042,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.build.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: CPPFLAGS=\"-I/Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/include/python3.11\" \"/Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/bin/python3.11\" \"-s\" \"-m\" \"pip\" \"install\" \"-r\" \"%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt\" failed with exit code 1: ERROR: Could not open requirements file: [Errno 2] No such file or directory: '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt'\n\n[notice] A new release of pip is available: 24.0 -> 26.2.1\n[notice] To update, run: /Users/runner/work/_temp/live-evidence/5f25e451d5d4/work/cache/com.github.autopkg.build.relocatablepython/Python.framework/Versions/3.11/bin/python3.11 -m pip install --upgrade pip\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 2.148,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "2aaf8fe67455b6b4ae289686620b792b92bdfee354f7e9d29ad19cf4ccf371d2",
+          "run.log": "b1b525ec713f10c71f25c0e7b0daaec14be4a8e19acfe779eab7b0554768890c",
+          "report.plist": "5b56f7f1257f02d0a9b4b468f9ae7f5ad084beb9bac005535b853d5ac4dcfc09"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.build.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: [Errno 2] No such file or directory: '/usr/local/autopkg/python'"
+      ],
+      "run_id": 37572245613,
+      "shard": 3,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "5f25e451d5d4",
+      "artifact": "live-recipes-3",
+      "evidence_sha256": {
+        "result.json": "a827f65a7ffc77123e06228ce21400d954bdf543927fae96c7c4dfc419e95c67",
+        "run.log": "38acce02dd061f7115ad16d2f72b4cc50bd7b155aeb473707f0b016f2881df35",
+        "report.plist": "03015026c0da4666dbcbdcf249c454aa71cd7b994db7bfbec92129b928ce97e3"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "RelocatablePython/RelocatablePython.dmg.recipe.yaml",
+      "recipe_sha256": "a4077f57b5b0d83380ff4073dbc27c11a45c23c07e6366d6081892199b1a1cd9",
+      "identifier": "com.github.autopkg.dmg.relocatablepython",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 402.396,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.dmg.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: CPPFLAGS=\"-I/Users/runner/work/_temp/live-evidence/8ccfeef677fa/work/cache/com.github.autopkg.dmg.relocatablepython/Python.framework/Versions/3.11/include/python3.11\" \"/Users/runner/work/_temp/live-evidence/8ccfeef677fa/work/cache/com.github.autopkg.dmg.relocatablepython/Python.framework/Versions/3.11/bin/python3.11\" \"-s\" \"-m\" \"pip\" \"install\" \"-r\" \"%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt\" failed with exit code 1: ERROR: Could not open requirements file: [Errno 2] No such file or directory: '%RECIPE_CACHE_DIR%/relocatable-python/requirements_python3_recommended.txt'\n\n[notice] A new release of pip is available: 24.0 -> 26.2.1\n[notice] To update, run: /Users/runner/work/_temp/live-evidence/8ccfeef677fa/work/cache/com.github.autopkg.dmg.relocatablepython/Python.framework/Versions/3.11/bin/python3.11 -m pip install --upgrade pip\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 1.152,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "8a1fb3ae3d865c222ce3bb42f4a10410d89c69855cc4ac743059c09396782f61",
+          "run.log": "d150240950ad7f0ac4b31b43de43907e3e6818307b44c87f9262d79ca87b4f06",
+          "report.plist": "bb39ebb8c25287945bd3447c155476bbfce6c292892b501aa07dcbfae83fba2f"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.dmg.relocatablepython: Processor: com.github.autopkg.AutoPkgGitMaster/GenerateRelocatablePython: Error: [Errno 2] No such file or directory: '/usr/local/autopkg/python'"
+      ],
+      "run_id": 37572245613,
+      "shard": 4,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "8ccfeef677fa",
+      "artifact": "live-recipes-4",
+      "evidence_sha256": {
+        "result.json": "7811e9480f30198177f1b2b4e8f1305935bcb5c3f28361cadaa713ee509b426e",
+        "run.log": "3d3c87af85bae4817109c85bbe5cc7b51e5ef1f9e48afc6867a6d9e6129688de",
+        "report.plist": "2bae1e3d39eb1bd54a8b0a265f27000dca899a0fb6fc69efa41fc85d31ed8bac"
+      },
+      "outcome": "failed"
+    },
+    {
+      "recipe": "SassafrasK2Client/SassafrasK2Client.munki.recipe",
+      "recipe_sha256": "1730430112a06922922032945d2a99524c3ecc610af180e4638f7d718115f351",
+      "identifier": "com.github.autopkg.munki.sassafras-k2client",
+      "status": "failed",
+      "exit_status": 70,
+      "duration_seconds": 0.811,
+      "source_unchanged": true,
+      "mount_cleanup": [],
+      "comparison": "both_failed_requires_review",
+      "summary_sections": [],
+      "office_2016_stop": false,
+      "catalog_skip": false,
+      "failure_messages": [
+        "Error in com.github.autopkg.munki.sassafras-k2client: Processor: URLDownloader: Error: curl: (22) The requested URL returned error: 404\n"
+      ],
+      "reference": {
+        "status": "failed",
+        "exit_status": 70,
+        "duration_seconds": 1.047,
+        "source_unchanged": true,
+        "mount_cleanup": [],
+        "evidence_sha256": {
+          "result.json": "658f6ba23c1d3d9d96330271dbf958c4174e3a8bd7540cb89875a3dba5e6b07f",
+          "run.log": "4b4a2ecde41bc35d70fc9463bf6d13905990acf9917fb8aed75b1ce6083ea44e",
+          "report.plist": "fef2012c422f46857dbc2aa858eb4770f84f31bd7e8093d4666a82102b862501"
+        }
+      },
+      "reference_failure_messages": [
+        "Error in com.github.autopkg.munki.sassafras-k2client: Processor: URLDownloader: Error: curl: (22) The requested URL returned error: 404\n"
+      ],
+      "run_id": 37572245613,
+      "shard": 5,
+      "binary_sha256": "2815ed6225acc20d6e929cf22c12d68fc597bd9c76fc82be99ec17fdbdfabdba",
+      "artifact_directory": "9c6eddc2f6f1",
+      "artifact": "live-recipes-5",
+      "evidence_sha256": {
+        "result.json": "70c0941f4b00e586952dce1a23d2f89d50d3f582839bed666e6b6f7cb464c570",
+        "run.log": "e398e7d3e25e036f162b7a73312372c445fd329a289f7c00e65816d65974ff02",
+        "report.plist": "aa3cb4afe4f7c08c916684166105d6ff5837c5aeb4dd75878c8f9e062a03dcf8"
+      },
+      "outcome": "failed"
+    }
+  ]
+}

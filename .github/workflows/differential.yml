@@ -1,0 +1,119 @@
+name: Compare with Python AutoPkg
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly, so changes on Russet's main branch are compared even when this
+    # repository doesn't change.
+    - cron: '23 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to compare'
+        required: true
+        type: string
+        default: main
+permissions:
+  contents: read
+concurrency:
+  group: differential-${{ github.ref }}-${{ inputs.russet_ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+env:
+  RUSSET_REF: ${{ inputs.russet_ref || 'main' }}
+jobs:
+  portable:
+    name: reference (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ env.RUSSET_REF }}
+          path: russet
+          persist-credentials: false
+      - name: Record the Russet commit under test
+        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Fetch the pinned Python AutoPkg reference
+        run: bash Scripts/fetch_reference.sh
+      - uses: actions/setup-python@v7
+        with:
+          # AutoPkg 3.0's release builder pins this interpreter version.
+          python-version: '3.11.9'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install reference dependencies in an isolated environment
+        if: runner.os != 'macOS'
+        run: |
+          python -m venv .reference-venv
+          .reference-venv/bin/python -m pip install appdirs==1.4.4 PyYAML==6.0.3 certifi==2025.10.5 lxml==6.1.0 xattr==1.2.0
+          echo "REFERENCE_PYTHON=$PWD/.reference-venv/bin/python" >> "$GITHUB_ENV"
+      - name: Extract the exact published macOS reference runtime
+        if: runner.os == 'macOS'
+        run: >-
+          python Scripts/prepare_rust_macos_reference.py
+          --output "$RUNNER_TEMP/autopkg-python-reference"
+          --github-env "$GITHUB_ENV"
+      - name: Record reference TLS configuration
+        run: '"$REFERENCE_PYTHON" -c "import ssl; print(ssl.OPENSSL_VERSION); print(ssl.get_default_verify_paths()); print(ssl.create_default_context().cert_store_stats())"'
+      - name: Extract pinned Munki reference tools without installing services
+        if: runner.os == 'macOS'
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/munki.pkg" https://github.com/munki/munki/releases/download/v7.2.0/munkitools-7.2.0.5787.pkg
+          printf '%s  %s\n' 9d003d763a1ddd2e97b830135a556941d6b76001bbbd2ce3e033157b8a2e20c5 "$RUNNER_TEMP/munki.pkg" | shasum -a 256 --check
+          pkgutil --expand-full "$RUNNER_TEMP/munki.pkg" "$RUNNER_TEMP/munki-reference"
+          test ! -e /usr/local/munki
+          sudo mkdir -p /usr/local/munki
+          sudo ditto "$RUNNER_TEMP/munki-reference/munkitools_admin.pkg/Payload/usr/local/munki" /usr/local/munki
+          sudo ditto "$RUNNER_TEMP/munki-reference/munkitools_pythonlibs.pkg/Payload/usr/local/munki" /usr/local/munki
+      - name: Verify Russet's frozen contracts against the pinned sources
+        run: |
+          python Scripts/capture_rust_contract.py --check
+          python Scripts/capture_community_processors.py --check
+      - name: Build the Russet development executable
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked -p autopkg-rs
+      - name: Compare isolated portable processor fixtures
+        run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON"
+      - name: Compare portable processor logs at verbosity 2
+        run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON" --verbose 2
+      - name: Compare local HTTP and download cache fixtures
+        run: python Scripts/differential_rust_http.py --python "$REFERENCE_PYTHON" --verbose 2
+      - name: Compare legacy download cache metadata and extended attributes
+        run: python Scripts/differential_rust_download_cache.py --python "$REFERENCE_PYTHON"
+      - name: Compare TLS trust and hostname failures
+        run: python Scripts/differential_rust_tls.py --python "$REFERENCE_PYTHON"
+      - name: Compare CLI, recipe reports, and persistence fixtures
+        run: python Scripts/differential_rust_cli.py --python "$REFERENCE_PYTHON"
+      - name: Compare promoted metadata providers
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_community_modern.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON"
+      - name: Compare promoted Adobe, Puppet, and Sassafras processors
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_community_legacy.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON"
+      - name: Compare promoted builders and verify relocated framework artifact
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_community_builders.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON" --makecatalogs /usr/local/munki/makecatalogs --live-framework
+      - name: Compare native NSPredicate fixtures
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON" --fixtures russet/compatibility/predicate-fixtures.json
+      - name: Compare native package and disk-image processors
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_rust_native.py --python "$REFERENCE_PYTHON"
+      - name: Compare all seven Munki processor entrypoints
+        if: runner.os == 'macOS'
+        run: python Scripts/differential_rust_munki.py --python "$REFERENCE_PYTHON"
+      - name: Run Russet's ignored native tests with the pinned Munki tools
+        if: runner.os == 'macOS'
+        run: cargo test --manifest-path russet/rust/Cargo.toml --workspace --exclude xtask --locked -- --include-ignored --test-threads=1

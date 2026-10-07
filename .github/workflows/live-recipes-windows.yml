@@ -1,0 +1,72 @@
+name: Live Windows upstream recipes
+on:
+  workflow_dispatch:
+    inputs:
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to build and run'
+        required: true
+        type: string
+        default: main
+permissions:
+  contents: read
+jobs:
+  firefox:
+    if: github.ref == 'refs/heads/main'
+    name: Firefox MSI signature and Chocolatey package
+    runs-on: windows-2025
+    timeout-minutes: 50
+    env:
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
+      RECIPE_REF: '0f7b61ab061c77710be4140c404910a11f89fc7b'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ inputs.russet_ref }}
+          path: russet
+          persist-credentials: false
+      - name: Record the Russet commit under test
+        shell: bash
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11.9'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Fetch exact upstream recipe snapshot
+        shell: pwsh
+        run: |
+          if ($env:RUNNER_ENVIRONMENT -ne 'github-hosted') { throw 'GitHub-hosted runner required' }
+          $recipes = Join-Path $env:RUNNER_TEMP 'windows-upstream-recipes'
+          git init $recipes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C $recipes fetch --depth=1 https://github.com/autopkg/recipes.git $env:RECIPE_REF
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C $recipes checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $actual = git -C $recipes rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $actual -ne $env:RECIPE_REF) { throw 'Recipe snapshot mismatch' }
+      - name: Build exact checked-out native executable
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --release --target x86_64-pc-windows-msvc -p autopkg-rs
+      - name: Download, verify signatures, and package without installing Firefox
+        shell: pwsh
+        run: |
+          python Scripts/run_live_windows_recipes.py --rust russet/rust/target/x86_64-pc-windows-msvc/release/autopkg-rs.exe --recipes "$env:RUNNER_TEMP/windows-upstream-recipes" --output "$env:RUNNER_TEMP/live-windows-evidence" --timeout 900
+          exit $LASTEXITCODE
+      - name: Upload logs, reports, provenance, downloads, and generated packages
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-windows-firefox-evidence
+          path: ${{ runner.temp }}/live-windows-evidence
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 14

@@ -1,0 +1,17 @@
+# Inputs that the suites fetch or build. Never commit them.
+/russet/
+/reference/
+/reference-runtime/
+
+# Python environments and caches
+/.reference-venv/
+/.venv/
+__pycache__/
+*.pyc
+
+# Suite outputs
+/.reference-runtime.txt
+/windows-*.json
+/live-evidence/
+
+.DS_Store

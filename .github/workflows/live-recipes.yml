@@ -1,0 +1,164 @@
+name: Live upstream recipes
+on:
+  workflow_dispatch:
+    inputs:
+      recipe_ref:
+        description: 'Exact autopkg/recipes commit to exercise'
+        required: true
+        type: string
+        default: '0f7b61ab061c77710be4140c404910a11f89fc7b'
+      recipe_paths:
+        description: 'JSON array of exact recipe paths to recheck; [] runs the full inventory'
+        required: true
+        type: string
+        default: '[]'
+      parallel_selected:
+        description: 'Spread a selected recipe list across eight hosted runners'
+        required: true
+        type: boolean
+        default: false
+      authenticate_github:
+        description: 'Use the workflow token for public GitHub API requests'
+        required: true
+        type: boolean
+        default: false
+      verbosity:
+        description: 'Diagnostic verbosity for targeted investigations'
+        required: true
+        type: choice
+        options: ['0', '1', '2', '3', '4']
+        default: '2'
+      timeout:
+        description: 'Timeout in seconds for each implementation of each recipe'
+        required: true
+        type: string
+        default: '180'
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to install and run'
+        required: true
+        type: string
+        default: main
+permissions:
+  contents: read
+jobs:
+  sweep:
+    name: Live recipes shard ${{ matrix.shard }}
+    runs-on: macos-15
+    timeout-minutes: 210
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: ${{ fromJSON(inputs.recipe_paths != '[]' && !inputs.parallel_selected && '[0]' || '[0,1,2,3,4,5,6,7]') }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ inputs.russet_ref }}
+          path: russet
+          persist-credentials: false
+      - name: Record the Russet commit under test
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install PyYAML==6.0.3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fetch exact upstream recipe and Python snapshots
+        env:
+          RECIPE_REF: ${{ inputs.recipe_ref }}
+        run: |
+          [[ "$RECIPE_REF" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'recipe_ref must be a full commit SHA'; exit 1; }
+          git init "$RUNNER_TEMP/upstream-recipes"
+          git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
+          git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
+          bash Scripts/fetch_reference.sh
+      - name: Build and install Russet and its privileged helpers on hosted runner
+        working-directory: russet/rust
+        run: |
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          cargo build --locked --release --target aarch64-apple-darwin -p autopkg-rs -p autopkg-helpers
+          cargo xtask package --target aarch64-apple-darwin --bin-dir target/aarch64-apple-darwin/release
+          tar -xzf dist/autopkg-rs-development-aarch64-apple-darwin.tar.gz -C "$RUNNER_TEMP"
+          sudo /bin/sh "$RUNNER_TEMP/autopkg-rs-development-aarch64-apple-darwin/install.sh" install
+      - name: Extract exact published Python reference
+        run: >-
+          python Scripts/prepare_rust_macos_reference.py
+          --output "$RUNNER_TEMP/python-runtime" --github-env "$GITHUB_ENV"
+      - name: Expose reference interpreter at the legacy builder path
+        run: |
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test ! -e /usr/local/autopkg/python
+          test ! -L /usr/local/autopkg/python
+          sudo mkdir -p /usr/local/autopkg
+          sudo ln -s "$REFERENCE_PYTHON" /usr/local/autopkg/python
+      - name: Prepare pinned Munki tools for Python failure comparisons
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/munki.pkg" https://github.com/munki/munki/releases/download/v7.2.0/munkitools-7.2.0.5787.pkg
+          printf '%s  %s\n' 9d003d763a1ddd2e97b830135a556941d6b76001bbbd2ce3e033157b8a2e20c5 "$RUNNER_TEMP/munki.pkg" | shasum -a 256 --check
+          pkgutil --expand-full "$RUNNER_TEMP/munki.pkg" "$RUNNER_TEMP/munki-reference"
+          test ! -e /usr/local/munki
+          sudo mkdir -p /usr/local/munki
+          sudo ditto "$RUNNER_TEMP/munki-reference/munkitools_admin.pkg/Payload/usr/local/munki" /usr/local/munki
+          sudo ditto "$RUNNER_TEMP/munki-reference/munkitools_pythonlibs.pkg/Payload/usr/local/munki" /usr/local/munki
+      - name: Write optional GitHub API token outside evidence
+        if: inputs.authenticate_github
+        env:
+          LIVE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PYTHON'
+          import os, pathlib
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'autopkg-github-token'
+          descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(descriptor, 'w') as token_file:
+              token_file.write(os.environ['LIVE_GITHUB_TOKEN'])
+          PYTHON
+      - name: Attempt every recipe in this shard
+        env:
+          RECIPE_TIMEOUT: ${{ inputs.timeout }}
+          RECIPE_VERBOSITY: ${{ inputs.verbosity }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.recipe_paths != '[]' && !inputs.parallel_selected && '1' || '8' }}
+          RECIPE_PATHS: ${{ inputs.recipe_paths }}
+          AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
+        run: |
+          python - <<'PYTHON'
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          paths = json.loads(os.environ['RECIPE_PATHS'])
+          if not isinstance(paths, list) or not all(isinstance(path, str) for path in paths):
+              raise ValueError('recipe_paths must be a JSON array of strings')
+          command = [sys.executable, 'Scripts/run_live_recipes.py',
+                     '--rust', 'russet/rust/target/aarch64-apple-darwin/release/autopkg-rs',
+                     '--recipes', str(root / 'upstream-recipes'),
+                     '--output', str(root / 'live-evidence'),
+                     '--timeout', os.environ['RECIPE_TIMEOUT'],
+                     '--verbose', os.environ['RECIPE_VERBOSITY'],
+                     '--shard', os.environ['SHARD'], '--shards', os.environ['SHARDS'],
+                     '--reference-python', os.environ['REFERENCE_PYTHON'],
+                     '--reference-code', os.path.abspath('reference/Code')]
+          if os.environ['AUTHENTICATE_GITHUB'] == 'true':
+              command.extend(['--github-token-file', str(root / 'autopkg-github-token')])
+          for path in paths:
+              command.extend(['--select', path])
+          sys.exit(subprocess.call(command))
+          PYTHON
+      - name: Upload complete logs, reports, inventory, and partial results even on failure
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-recipes-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/live-evidence
+            ${{ runner.temp }}/python-runtime/reference-runtime.json
+            !${{ runner.temp }}/live-evidence/**/work/**
+            !${{ runner.temp }}/live-evidence/reference-code/**
+          if-no-files-found: warn
+          retention-days: 14

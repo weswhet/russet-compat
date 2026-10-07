@@ -1,0 +1,146 @@
+name: Compare with Python AutoPkg on Windows
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly, so changes on Russet's main branch are compared even when this
+    # repository doesn't change.
+    - cron: '23 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to compare'
+        required: true
+        type: string
+        default: main
+permissions:
+  contents: read
+concurrency:
+  group: windows-differential-${{ github.ref }}-${{ inputs.russet_ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+env:
+  RUSSET_REF: ${{ inputs.russet_ref || 'main' }}
+jobs:
+  windows-reference:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ env.RUSSET_REF }}
+          path: russet
+          persist-credentials: false
+      - name: Record the Russet commit under test
+        shell: bash
+        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Fetch the pinned Python AutoPkg reference
+        shell: bash
+        run: bash Scripts/fetch_reference.sh
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11.9'
+          architecture: x64
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Install pinned Windows reference dependencies in an isolated environment
+        run: |
+          python -m venv .reference-venv
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Select runtime/code-generator requirements and their Windows dependency closure.
+          # Read exact upstream pins; do not inherit its development-only --no-binary policy.
+          @'
+          from pathlib import Path
+          names = {'appdirs', 'certifi', 'lxml', 'pyyaml', 'generateds', 'requests',
+                   'charset-normalizer', 'idna', 'six', 'urllib3'}
+          reference = Path('reference/requirements.txt').read_text()
+          lines = [line for line in reference.splitlines()
+                   if line.split('==', 1)[0].lower() in names]
+          assert len(lines) == len(names), 'Missing or duplicated runtime dependency pin'
+          Path('.reference-runtime.txt').write_text('\n'.join(lines) + '\n')
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\.reference-venv\Scripts\python.exe -m pip install --prefer-binary -r .reference-runtime.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\.reference-venv\Scripts\python.exe -c "import platform, appdirs, certifi, lxml, yaml, requests; assert platform.python_version() == '3.11.9'"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Record reference TLS configuration
+        run: .reference-venv/Scripts/python.exe -c "import ssl; print(ssl.OPENSSL_VERSION); print(ssl.get_default_verify_paths()); print(ssl.create_default_context().cert_store_stats())"
+      - name: Verify Russet's frozen contract against the pinned source
+        run: python Scripts/capture_rust_contract.py --check
+      - name: Build the native MSVC development executable
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --target x86_64-pc-windows-msvc -p autopkg-rs
+      - name: Test native Windows comparison normalization
+        run: python Scripts/test_rust_windows_native.py
+      - name: Compare native Windows processor defaults with Python
+        if: ${{ !cancelled() }}
+        run: >-
+          python Scripts/differential_rust_windows_native.py
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --results windows-native-differential.json
+      - name: Compare real Python portable processor fixtures
+        run: >-
+          python Scripts/differential_rust_processors.py
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --coverage-output windows-portable-coverage.json
+      - name: Compare portable processor logs at verbosity 2
+        if: ${{ !cancelled() }}
+        run: >-
+          python Scripts/differential_rust_processors.py
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --verbose 2
+          --coverage-output windows-portable-verbose-coverage.json
+      - name: Compare real Python HTTP, authentication, and download cache fixtures
+        if: ${{ !cancelled() }}
+        run: >-
+          python Scripts/differential_rust_http.py --verbose 2
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+      - name: Compare real Python CLI, reports, persistence, and Git transport
+        if: ${{ !cancelled() }}
+        run: >-
+          python Scripts/differential_rust_cli.py
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --results windows-cli-results.json
+      - name: Compare TLS trust and hostname failures
+        if: ${{ !cancelled() }}
+        run: >-
+          python Scripts/differential_rust_tls.py
+          --python .reference-venv/Scripts/python.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+      - name: Compare portable predicates with captured native Foundation results
+        if: ${{ !cancelled() }}
+        # Pinned Python cannot execute NSPredicate on Windows. This separate gate
+        # uses the actual macOS oracle, never a Python predicate replacement.
+        run: >-
+          python Scripts/differential_rust_processors.py
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --fixtures russet/compatibility/predicate-fixtures.json
+          --frozen-reference russet/compatibility/predicate-reference-results.json
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: windows-python-reference-evidence
+          path: |
+            windows-cli-results.json
+            windows-portable-coverage.json
+            windows-native-differential.json
+            .reference-runtime.txt
+          if-no-files-found: warn
