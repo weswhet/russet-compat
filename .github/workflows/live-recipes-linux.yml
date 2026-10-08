@@ -1,0 +1,238 @@
+name: Live recipes on Linux
+# Runs the same live upstream recipes three ways on the same day: macOS with
+# Apple's tools (the baseline), macOS with Russet's native replacements
+# (RUSSET_NATIVE=all), and Linux. Then compares them, and checks the
+# packages and disk images Linux built with Apple's tools.
+on:
+  workflow_dispatch:
+    inputs:
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to build and run'
+        required: true
+        type: string
+        default: main
+      recipe_ref:
+        description: 'Exact autopkg/recipes commit to exercise'
+        required: true
+        type: string
+        default: '0f7b61ab061c77710be4140c404910a11f89fc7b'
+      recipe_set:
+        description: 'Recipes to run: those that completed on macOS in evidence/live-recipes-2026-10-07.json, or the full inventory'
+        required: true
+        type: choice
+        options: ['macos-completed', 'all']
+        default: macos-completed
+      recipe_paths:
+        description: 'JSON array of exact recipe paths; overrides recipe_set when not []'
+        required: true
+        type: string
+        default: '[]'
+      authenticate_github:
+        description: 'Use the workflow token for public GitHub API requests'
+        required: true
+        type: boolean
+        default: true
+      timeout:
+        description: 'Timeout in seconds for each recipe'
+        required: true
+        type: string
+        default: '300'
+permissions:
+  contents: read
+jobs:
+  select:
+    name: Select recipes
+    runs-on: ubuntu-24.04
+    outputs:
+      paths: ${{ steps.select.outputs.paths }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - id: select
+        env:
+          RECIPE_SET: ${{ inputs.recipe_set }}
+          RECIPE_PATHS: ${{ inputs.recipe_paths }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os
+          paths = json.loads(os.environ['RECIPE_PATHS'])
+          if not isinstance(paths, list) or not all(isinstance(p, str) for p in paths):
+              raise ValueError('recipe_paths must be a JSON array of strings')
+          if not paths and os.environ['RECIPE_SET'] == 'macos-completed':
+              evidence = json.load(open('evidence/live-recipes-2026-10-07.json'))
+              paths = [r['recipe'] for r in evidence['recipes'] if r['final']['status'] == 'passed']
+          print(f'{len(paths) or "all"} recipes selected')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('paths=' + json.dumps(paths) + '\n')
+          PYTHON
+  run:
+    name: ${{ matrix.leg }} shard ${{ matrix.shard }}
+    needs: select
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        leg: [apple, native, linux]
+        shard: [0, 1, 2, 3]
+        include:
+          - leg: apple
+            os: macos-15
+            target: aarch64-apple-darwin
+            native: ''
+          - leg: native
+            os: macos-15
+            target: aarch64-apple-darwin
+            native: all
+          - leg: linux
+            os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            native: ''
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ inputs.russet_ref }}
+          path: russet
+          persist-credentials: false
+      - name: Record the Russet commit under test
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install PyYAML==6.0.3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fetch exact upstream recipes
+        env:
+          RECIPE_REF: ${{ inputs.recipe_ref }}
+        run: |
+          [[ "$RECIPE_REF" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'recipe_ref must be a full commit SHA'; exit 1; }
+          git init "$RUNNER_TEMP/upstream-recipes"
+          git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
+          git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
+      - name: Build Russet
+        working-directory: russet/rust
+        run: cargo build --locked --release --target ${{ matrix.target }} -p autopkg-rs -p autopkg-helpers
+      - name: Install Russet's privileged helpers on macOS
+        if: runner.os == 'macOS'
+        working-directory: russet/rust
+        run: |
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          cargo xtask package --target ${{ matrix.target }} --bin-dir target/${{ matrix.target }}/release
+          tar -xzf dist/autopkg-rs-development-${{ matrix.target }}.tar.gz -C "$RUNNER_TEMP"
+          sudo /bin/sh "$RUNNER_TEMP/autopkg-rs-development-${{ matrix.target }}/install.sh" install
+      - name: Write GitHub API token outside evidence
+        if: inputs.authenticate_github
+        env:
+          LIVE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PYTHON'
+          import os, pathlib
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'autopkg-github-token'
+          descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(descriptor, 'w') as token_file:
+              token_file.write(os.environ['LIVE_GITHUB_TOKEN'])
+          PYTHON
+      - name: Run this shard's recipes
+        env:
+          RUSSET_NATIVE: ${{ matrix.native }}
+          RECIPE_TIMEOUT: ${{ inputs.timeout }}
+          SHARD: ${{ matrix.shard }}
+          RECIPE_PATHS: ${{ needs.select.outputs.paths }}
+          AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
+          TARGET: ${{ matrix.target }}
+          LEG: ${{ matrix.leg }}
+        run: |
+          python - <<'PYTHON'
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          command = [sys.executable, 'Scripts/run_live_recipes.py',
+                     '--rust', f"russet/rust/target/{os.environ['TARGET']}/release/autopkg-rs",
+                     '--recipes', str(root / 'upstream-recipes'),
+                     '--output', str(root / 'live-evidence'),
+                     '--timeout', os.environ['RECIPE_TIMEOUT'],
+                     '--shard', os.environ['SHARD'], '--shards', '4']
+          if os.environ['LEG'] == 'linux':
+              command += ['--collect-outputs', str(root / 'built-outputs')]
+          if os.environ['AUTHENTICATE_GITHUB'] == 'true':
+              command += ['--github-token-file', str(root / 'autopkg-github-token')]
+          for path in json.loads(os.environ['RECIPE_PATHS']):
+              command += ['--select', path]
+          # Failures are compared across legs in the next job.
+          subprocess.call(command)
+          PYTHON
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-${{ matrix.leg }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/live-evidence
+            !${{ runner.temp }}/live-evidence/**/work/**
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload packages and disk images built on Linux
+        if: always() && matrix.leg == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: built-outputs-${{ matrix.shard }}
+          path: ${{ runner.temp }}/built-outputs
+          if-no-files-found: warn
+          retention-days: 7
+  compare:
+    name: Compare legs
+    needs: run
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: live-*
+          path: ${{ runner.temp }}/evidence
+      - name: Compare macOS (Apple tools), macOS (native), and Linux
+        run: |
+          e="$RUNNER_TEMP/evidence"
+          mkdir -p "$e/apple" "$e/native" "$e/linux"
+          for leg in apple native linux; do mv "$e"/live-$leg-* "$e/$leg/"; done
+          python3 Scripts/compare_live_legs.py --apple "$e/apple" --native "$e/native" --linux "$e/linux" \
+            --output "$RUNNER_TEMP/comparison.json" --markdown "$RUNNER_TEMP/comparison.md"
+      - if: always()
+        run: cat "$RUNNER_TEMP/comparison.md" >> "$GITHUB_STEP_SUMMARY"
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: comparison
+          path: |
+            ${{ runner.temp }}/comparison.json
+            ${{ runner.temp }}/comparison.md
+  verify-linux-outputs:
+    name: Check Linux-built outputs with Apple's tools
+    needs: run
+    if: always()
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: built-outputs-*
+          path: ${{ runner.temp }}/built-outputs
+      - run: python3 Scripts/verify_linux_outputs.py "$RUNNER_TEMP/built-outputs" --report "$RUNNER_TEMP/verify-outputs.json"
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-linux-outputs
+          path: ${{ runner.temp }}/verify-outputs.json
+          if-no-files-found: warn

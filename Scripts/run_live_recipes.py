@@ -56,6 +56,8 @@ def classify(status, log):
     lowered = log.lower()
     if any(text in lowered for text in ("custom processor", "unknown processor", "not a built-in processor", "python processor")):
         return "unsupported_processor"
+    if "only supported on macos" in lowered or "requires macos" in lowered:
+        return "unsupported_platform"
     if "parent" in lowered and any(text in lowered for text in ("not found", "could not", "unable to", "missing")):
         return "missing_parent"
     # These labels describe observed diagnostics, not whether Python would pass.
@@ -104,7 +106,30 @@ def prepare_reference(code, output):
     return isolated
 
 
-def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=None, github_token_file=None, verbose=2):
+# Built outputs larger than this aren't kept for checking on macOS.
+MAX_OUTPUT_BYTES = 512 << 20
+
+
+def collect_outputs(work, destination):
+    """Copies packages and disk images the recipe built, as opposed to ones it
+    downloaded, so another job can check them with Apple's tools."""
+    kept = []
+    cache = work / "cache"
+    for path in sorted(cache.rglob("*")):
+        relative = path.relative_to(cache)
+        if "downloads" in relative.parts or path.is_symlink() or not path.is_file():
+            continue
+        if path.suffix.lower() not in (".pkg", ".dmg") or path.stat().st_size > MAX_OUTPUT_BYTES:
+            continue
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+        kept.append({"path": relative.as_posix(), "size": path.stat().st_size,
+                     "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+    return kept
+
+
+def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=None, github_token_file=None, verbose=2, outputs=None):
     directory = output / (hashlib.sha256(case["path"].encode()).hexdigest()[:12])
     directory.mkdir()
     work = directory / "work"
@@ -164,6 +189,8 @@ def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=No
             result["report_parse_error"] = str(error)
     result["source_unchanged"] = hashlib.sha256((recipes / case["path"]).read_bytes()).hexdigest() == case["sha256"]
     result["mount_cleanup"] = cleanup_mounts(work)
+    if outputs is not None and result["status"] == "passed":
+        result["built_outputs"] = collect_outputs(work, outputs / directory.name)
     if not keep_work:
         try:
             shutil.rmtree(work)
@@ -187,6 +214,7 @@ def main():
     parser.add_argument("--github-token-file", type=Path, help="GitHub token file outside the evidence directory")
     parser.add_argument("--reference-python", type=Path)
     parser.add_argument("--reference-code", type=Path, help="Pinned upstream Code directory; failures rerun separately")
+    parser.add_argument("--collect-outputs", type=Path, help="New directory for built packages and disk images")
     args = parser.parse_args()
     if args.timeout <= 0 or args.shards < 1 or not 0 <= args.shard < args.shards:
         parser.error("Timeout and shards must be positive, and shard must be in range")
@@ -212,17 +240,22 @@ def main():
     eligible = [case for case in cases if not args.select or case["path"] in args.select]
     selected = [case for index, case in enumerate(eligible) if index % args.shards == args.shard]
     output.mkdir(parents=True)
+    outputs = args.collect_outputs.absolute() if args.collect_outputs else None
+    if outputs:
+        outputs.mkdir(parents=True)
     reference_code = prepare_reference(args.reference_code.resolve(), output) if args.reference_code else None
     reference_output = output / "reference-results"
     reference_output.mkdir()
     write_json(output / "inventory.json", {"recipe_commit": commit, "recipes": cases})
     summary = {"recipe_commit": commit, "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
                "shard": args.shard, "shards": args.shards, "timeout_seconds": args.timeout,
+               "platform": sys.platform, "russet_native": os.environ.get("RUSSET_NATIVE", ""),
                "authenticated_github": bool(token_file), "inventory_count": len(cases), "selected_count": len(selected), "results": [],
                "reference_comparison": "failed built-in runs only; independent downloads, no output equivalence claim" if reference_code else "not performed", "complete": False}
     write_json(output / "summary.json", summary)
     for index, case in enumerate(selected):
-        result = run_one(binary, recipes, case, output, args.timeout, args.keep_work, github_token_file=token_file, verbose=args.verbose)
+        result = run_one(binary, recipes, case, output, args.timeout, args.keep_work, github_token_file=token_file,
+                         verbose=args.verbose, outputs=outputs)
         if reference_code and result["status"] != "passed" and result["diagnostic_category"] != "unsupported_processor":
             reference = run_one(args.reference_python.resolve(), recipes, case, reference_output,
                                 args.timeout, args.keep_work, reference_code, github_token_file=token_file, verbose=args.verbose)
