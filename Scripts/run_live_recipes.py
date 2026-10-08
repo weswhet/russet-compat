@@ -131,13 +131,14 @@ def collect_outputs(work, destination):
     return kept
 
 
-def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=None, github_token_file=None, verbose=2, outputs=None):
+def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=None, github_token_file=None, verbose=2, outputs=None,
+            search_dirs=()):
     directory = output / (hashlib.sha256(case["path"].encode()).hexdigest()[:12])
     directory.mkdir()
     work = directory / "work"
     for name in ("cache", "overrides", "repos", "tmp", "config/Autopkg", "munki/catalogs", "munki/pkgs", "munki/pkgsinfo", "munki/icons"):
         (work / name).mkdir(parents=True, exist_ok=True)
-    preferences = {"CACHE_DIR": str(work / "cache"), "RECIPE_SEARCH_DIRS": [str(recipes)],
+    preferences = {"CACHE_DIR": str(work / "cache"), "RECIPE_SEARCH_DIRS": [str(recipes)] + [str(path) for path in search_dirs],
                    "RECIPE_OVERRIDE_DIRS": [str(work / "overrides")], "RECIPE_REPO_DIR": str(work / "repos"),
                    "RECIPE_REPOS": {}, "RECIPE_MAP_PATH": str(work / "map.json"),
                    "MUNKI_REPO": str(work / "munki"), "MUNKI_REPO_PLUGIN": "FileRepo",
@@ -211,6 +212,8 @@ def main():
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--shards", type=int, default=1)
     parser.add_argument("--select", action="append", default=[], help="Exact relative recipe path; repeatable")
+    parser.add_argument("--search-dir", action="append", type=Path, default=[],
+                        help="Folder in the recipe checkout to also search for parent recipes; repeatable")
     parser.add_argument("--keep-work", action="store_true")
     parser.add_argument("--verbose", type=int, choices=range(5), default=2)
     parser.add_argument("--github-token-file", type=Path, help="GitHub token file outside the evidence directory")
@@ -227,6 +230,9 @@ def main():
     recipes, binary, output = args.recipes.resolve(), args.rust.resolve(), args.output.absolute()
     if not binary.is_file() or not recipes.is_dir():
         parser.error("Binary and recipe checkout must exist")
+    search_dirs = [path.resolve() for path in args.search_dir]
+    if not all(path.is_dir() and recipes in path.parents for path in search_dirs):
+        parser.error("Search folders must be inside the recipe checkout")
     token_file = args.github_token_file.resolve() if args.github_token_file else None
     if token_file and (not token_file.is_file() or token_file == output.resolve() or output.resolve() in token_file.parents):
         parser.error("GitHub token file must exist outside the evidence directory")
@@ -257,10 +263,11 @@ def main():
     write_json(output / "summary.json", summary)
     for index, case in enumerate(selected):
         result = run_one(binary, recipes, case, output, args.timeout, args.keep_work, github_token_file=token_file,
-                         verbose=args.verbose, outputs=outputs)
+                         verbose=args.verbose, outputs=outputs, search_dirs=search_dirs)
         if reference_code and result["status"] != "passed" and result["diagnostic_category"] != "unsupported_processor":
             reference = run_one(args.reference_python.resolve(), recipes, case, reference_output,
-                                args.timeout, args.keep_work, reference_code, github_token_file=token_file, verbose=args.verbose)
+                                args.timeout, args.keep_work, reference_code, github_token_file=token_file, verbose=args.verbose,
+                                search_dirs=search_dirs)
             result["reference"] = reference
             result["comparison"] = "rust_failed_reference_passed" if reference["status"] == "passed" else "both_failed_requires_review"
         elif result["diagnostic_category"] == "unsupported_processor":

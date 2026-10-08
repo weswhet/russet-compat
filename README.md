@@ -148,6 +148,14 @@ Linux, an operation Russet supports only on macOS, such as installing a
 package. By default it runs the recipes that completed on macOS in
 `evidence/live-recipes-2026-10-07.json`.
 
+Set **recipe_set** to `org-sample` to run a sample of community recipes from
+the other `autopkg` organization repositories instead. The sample, in
+`samples/org-recipes-2026-10-08.json`, holds up to one download, one pkg, and
+one munki recipe from each repository, all using only processors that Russet
+implements and none installing software. It pins each repository's commit, and
+the workflow puts every repository on the recipe search path so that parent
+recipes resolve across repositories.
+
 On Linux, the CLI suite accepts one deliberate difference: Russet's
 `processor-info Unarchiver` shows `USE_PYTHON_NATIVE_EXTRACTOR` defaulting to
 `False`, because Russet extracts archives with its built-in `ditto`

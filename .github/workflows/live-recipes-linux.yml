@@ -22,10 +22,10 @@ on:
         type: string
         default: '0f7b61ab061c77710be4140c404910a11f89fc7b'
       recipe_set:
-        description: 'Recipes to run: those that completed on macOS in evidence/live-recipes-2026-10-07.json, or the full inventory'
+        description: 'Recipes to run: those that completed on macOS in evidence/live-recipes-2026-10-07.json, the full autopkg/recipes inventory, or the community sample in samples/org-recipes-2026-10-08.json (pinned repositories; ignores recipe_ref)'
         required: true
         type: choice
-        options: ['macos-completed', 'all']
+        options: ['macos-completed', 'all', 'org-sample']
         default: macos-completed
       recipe_paths:
         description: 'JSON array of exact recipe paths; overrides recipe_set when not []'
@@ -42,6 +42,11 @@ on:
         required: true
         type: string
         default: '600'
+      shards:
+        description: 'Shards per leg, from 1 to 16'
+        required: true
+        type: string
+        default: '4'
 permissions:
   contents: read
 jobs:
@@ -50,6 +55,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       paths: ${{ steps.select.outputs.paths }}
+      shards: ${{ steps.select.outputs.shards }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -58,18 +64,25 @@ jobs:
         env:
           RECIPE_SET: ${{ inputs.recipe_set }}
           RECIPE_PATHS: ${{ inputs.recipe_paths }}
+          SHARDS: ${{ inputs.shards }}
         run: |
           python3 - <<'PYTHON'
           import json, os
           paths = json.loads(os.environ['RECIPE_PATHS'])
           if not isinstance(paths, list) or not all(isinstance(p, str) for p in paths):
               raise ValueError('recipe_paths must be a JSON array of strings')
+          shards = int(os.environ['SHARDS'])
+          if not 1 <= shards <= 16:
+              raise ValueError('shards must be from 1 to 16')
           if not paths and os.environ['RECIPE_SET'] == 'macos-completed':
               evidence = json.load(open('evidence/live-recipes-2026-10-07.json'))
               paths = [r['recipe'] for r in evidence['recipes'] if r['final']['status'] == 'passed']
+          if not paths and os.environ['RECIPE_SET'] == 'org-sample':
+              paths = json.load(open('samples/org-recipes-2026-10-08.json'))['recipes']
           print(f'{len(paths) or "all"} recipes selected')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('paths=' + json.dumps(paths) + '\n')
+              output.write('shards=' + json.dumps(list(range(shards))) + '\n')
           PYTHON
   run:
     name: ${{ matrix.leg }} shard ${{ matrix.shard }}
@@ -80,7 +93,7 @@ jobs:
       fail-fast: false
       matrix:
         leg: [apple, native, linux]
-        shard: [0, 1, 2, 3]
+        shard: ${{ fromJSON(needs.select.outputs.shards) }}
         include:
           - leg: apple
             os: macos-15
@@ -112,6 +125,7 @@ jobs:
       - run: python -m pip install PyYAML==6.0.3
       - uses: dtolnay/rust-toolchain@stable
       - name: Fetch exact upstream recipes
+        if: inputs.recipe_set != 'org-sample'
         env:
           RECIPE_REF: ${{ inputs.recipe_ref }}
         run: |
@@ -120,6 +134,33 @@ jobs:
           git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
           git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
           test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
+      # Each repository goes in its own folder at its pinned commit, with
+      # autopkg/recipes in recipes/, so parents resolve across repositories.
+      # The combined tree is committed so the harness can check it stays
+      # unchanged.
+      - name: Fetch the pinned community recipe repositories
+        if: inputs.recipe_set == 'org-sample'
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, pathlib, re, subprocess, tarfile, urllib.request
+          manifest = json.load(open('samples/org-recipes-2026-10-08.json'))
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'upstream-recipes'
+          root.mkdir()
+          repos = {'recipes': manifest['core_recipes']['commit'], **manifest['repositories']}
+          for name, commit in repos.items():
+              if not re.fullmatch(r'[A-Za-z0-9._-]+', name) or not re.fullmatch(r'[0-9a-f]{40}', commit):
+                  raise ValueError(f'bad repository entry {name} {commit}')
+              url = f'https://codeload.github.com/autopkg/{name}/tar.gz/{commit}'
+              with urllib.request.urlopen(url) as response, tarfile.open(fileobj=response, mode='r|gz') as archive:
+                  archive.extractall(root / '.download', filter='data')
+              (root / '.download' / f'{name}-{commit}').rename(root / name)
+          (root / '.download').rmdir()
+          subprocess.run(['git', 'init', '-q', str(root)], check=True)
+          subprocess.run(['git', '-C', str(root), 'add', '-A'], check=True)
+          subprocess.run(['git', '-C', str(root), '-c', 'user.name=live', '-c', 'user.email=live@invalid',
+                          'commit', '-qm', 'Pinned recipe repositories'], check=True)
+          print(f'{len(repos)} repositories fetched')
+          PYTHON
       # Every leg runs Russet the way users get it: a packaged archive
       # installed with its install.sh, then /usr/local/bin/russet.
       - name: Build and package Russet
@@ -173,6 +214,8 @@ jobs:
           RUSSET_NATIVE: ${{ matrix.native }}
           RECIPE_TIMEOUT: ${{ inputs.timeout }}
           SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.shards }}
+          RECIPE_SET: ${{ inputs.recipe_set }}
           RECIPE_PATHS: ${{ needs.select.outputs.paths }}
           AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
           LEG: ${{ matrix.leg }}
@@ -185,7 +228,11 @@ jobs:
                      '--recipes', str(root / 'upstream-recipes'),
                      '--output', str(root / 'live-evidence'),
                      '--timeout', os.environ['RECIPE_TIMEOUT'],
-                     '--shard', os.environ['SHARD'], '--shards', '4']
+                     '--shard', os.environ['SHARD'], '--shards', os.environ['SHARDS']]
+          if os.environ['RECIPE_SET'] == 'org-sample':
+              for folder in sorted((root / 'upstream-recipes').iterdir()):
+                  if folder.is_dir() and not folder.name.startswith('.'):
+                      command += ['--search-dir', str(folder)]
           if os.environ['LEG'] == 'linux':
               command += ['--collect-outputs', str(root / 'built-outputs')]
           if os.environ['AUTHENTICATE_GITHUB'] == 'true':
