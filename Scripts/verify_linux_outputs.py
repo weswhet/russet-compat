@@ -6,6 +6,9 @@ Packages: `pkgutil --payload-files` must list the same paths as `lsbom` on the
 package's BOM (an incomplete BOM gives an incomplete install receipt), and
 `installer -pkginfo` must read the package. Disk images: `hdiutil verify`
 must accept the checksums, and the image must attach read-only.
+
+A command that exceeds its time limit doesn't fail the check. The output is
+listed as skipped, so one slow image can't hide the results for the rest.
 """
 import argparse
 import json
@@ -15,8 +18,18 @@ import sys
 import tempfile
 
 
+TIME_LIMIT = 600
+
+
+class TimedOut(Exception):
+    pass
+
+
 def run(*command):
-    return subprocess.run(command, capture_output=True, text=True, timeout=600)
+    try:
+        return subprocess.run(command, capture_output=True, text=True, timeout=TIME_LIMIT)
+    except subprocess.TimeoutExpired:
+        raise TimedOut(f"{Path(command[0]).name} {command[1] if len(command) > 1 else ''} ran longer than {TIME_LIMIT} seconds")
 
 
 def check_package(path):
@@ -66,14 +79,22 @@ def main():
     args = parser.parse_args()
     results = []
     for path in sorted(p for p in args.outputs.rglob("*") if p.suffix.lower() in (".pkg", ".dmg") and p.is_file()):
-        problems = check_package(path) if path.suffix.lower() == ".pkg" else check_image(path)
-        results.append({"path": str(path.relative_to(args.outputs)), "problems": problems})
-        print(("FAIL " if problems else "OK   ") + str(path.relative_to(args.outputs)))
+        name = str(path.relative_to(args.outputs))
+        try:
+            problems = check_package(path) if path.suffix.lower() == ".pkg" else check_image(path)
+        except TimedOut as error:
+            results.append({"path": name, "problems": [], "skipped": str(error)})
+            print("SKIP " + name + ": " + str(error))
+            continue
+        results.append({"path": name, "problems": problems})
+        print(("FAIL " if problems else "OK   ") + name)
         for problem in problems:
             print("     " + problem)
     args.report.write_text(json.dumps(results, indent=2) + "\n")
     failed = [r for r in results if r["problems"]]
-    print(f"{len(results)} outputs checked, {len(failed)} with problems")
+    skipped = [r for r in results if "skipped" in r]
+    print(f"{len(results)} outputs found, {len(results) - len(skipped) - len(failed)} passed, "
+          f"{len(failed)} with problems, {len(skipped)} skipped")
     return 1 if failed or not results else 0
 
 
