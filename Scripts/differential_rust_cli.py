@@ -218,6 +218,23 @@ def invoke(command, args, root, executable=None, case="", prepared_env=None, git
     return outcome
 
 
+def unarchiver_python_default(stdout):
+    """Rewrites the USE_PYTHON_NATIVE_EXTRACTOR default in Russet's Unarchiver
+    processor-info output to Python AutoPkg's Linux value."""
+    lines = stdout.split("\n")
+    for index, line in enumerate(lines):
+        if line.strip() == "USE_PYTHON_NATIVE_EXTRACTOR:":
+            indent = len(line) - len(line.lstrip())
+            for later in range(index + 1, len(lines)):
+                current = lines[later]
+                if current.strip() and len(current) - len(current.lstrip()) <= indent:
+                    break
+                if current.strip() == "default: False":
+                    lines[later] = current.replace("default: False", "default: True")
+                    return "\n".join(lines)
+    return stdout
+
+
 def equivalent(name, expected, actual):
     if name == "git-transport-sequence":
         return expected.keys()==actual.keys() and all(equivalent(step,expected[step],actual[step]) for step in expected)
@@ -235,6 +252,12 @@ def equivalent(name, expected, actual):
         if expected.get("stdout") == original_inventory and actual.get("stdout") == expanded_inventory:
             actual = dict(actual, stdout=original_inventory)
             break
+    if name == "processor-info-Unarchiver" and sys.platform.startswith("linux"):
+        # Russet extracts zip and cpio archives with its built-in ditto
+        # replacement on Linux, so it deliberately defaults
+        # USE_PYTHON_NATIVE_EXTRACTOR to False there, where Python AutoPkg
+        # defaults it to True. Accept exactly that default and nothing else.
+        actual = dict(actual, stdout=unarchiver_python_default(actual.get("stdout", "")))
     if not name.startswith("run-failure"):
         return expected == actual
     # Stack frames are runtime-specific, not a compatibility equality assertion.

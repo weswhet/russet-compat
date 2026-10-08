@@ -23,7 +23,8 @@ downloads it at the pinned commit when you run the suites.
 | `differential_rust_munki.py` | All seven Munki processor entry points, with the pinned Munki 7.2.0 tools | macOS |
 | `differential_community_modern.py`, `differential_community_legacy.py`, `differential_community_builders.py` | The community processors that Russet implements, against their pinned sources in `community-source/` | macOS |
 | `differential_rust_windows_native.py` | Chocolatey packaging and signature verification with the real Windows tools | Windows |
-| `run_live_recipes.py`, `run_live_windows_recipes.py` | Unchanged `autopkg/recipes` recipes against live download servers | macOS, Windows |
+| `run_live_recipes.py`, `run_live_windows_recipes.py` | Unchanged `autopkg/recipes` recipes against live download servers | macOS, Linux, Windows |
+| `compare_live_legs.py`, `verify_linux_outputs.py` | Same-day live runs on macOS with Apple's tools, macOS with Russet's native replacements, and Linux; then the Linux-built packages and disk images, checked with Apple's tools | macOS, Linux |
 
 Three capture scripts check the frozen contracts that Russet builds against,
 which live in Russet's `compatibility/` folder:
@@ -115,6 +116,7 @@ everything that each suite needs.
 | `windows-differential.yml` | Same as `differential.yml` | Same as `differential.yml` |
 | `live-recipes.yml` (macOS) | Only on demand, because it downloads from vendor servers | The `russet_ref` that you enter, `main` by default |
 | `live-recipes-windows.yml` | Only on demand, from this repository's `main` branch | The `russet_ref` that you enter, `main` by default |
+| `live-recipes-linux.yml` (macOS and Linux) | Only on demand, because it downloads from vendor servers | The `russet_ref` that you enter, `main` by default |
 
 To compare a Russet branch, tag, or commit, open the workflow on the **Actions**
 tab, click **Run workflow**, and enter it in **russet_ref**. Each run records
@@ -131,6 +133,19 @@ The `docs/` folder describes two suites in more detail:
 - `cli.md`: what the CLI suite compares, and how to run it.
 - `munki-option-coverage.md`: how the Munki suite's fixtures cover each
   `makepkginfo` option declaration and alias.
+
+`live-recipes-linux.yml` runs the recipes three ways on the same day, so
+download changes between runs don't look like regressions. The macOS run with
+Apple's tools is the baseline: a recipe that passes there and fails on a native
+leg fails the comparison, unless the failure is a network diagnostic or, on
+Linux, an operation Russet supports only on macOS, such as installing a
+package. By default it runs the recipes that completed on macOS in
+`evidence/live-recipes-2026-10-07.json`.
+
+On Linux, the CLI suite accepts one deliberate difference: Russet's
+`processor-info Unarchiver` shows `USE_PYTHON_NATIVE_EXTRACTOR` defaulting to
+`False`, because Russet extracts archives with its built-in `ditto`
+replacement there, where Python AutoPkg shows `True`.
 
 `Scripts/verify_rust_macos_upgrade.sh` upgrades a running Python AutoPkg
 installation to Russet and then restores it. It runs only as root inside an
