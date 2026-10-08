@@ -141,8 +141,11 @@ The `docs/` folder describes two suites in more detail:
   `makepkginfo` option declaration and alias.
 
 `live-recipes-linux.yml` runs the recipes three ways on the same day, so
-download changes between runs don't look like regressions. The macOS run with
-Apple's tools is the baseline: a recipe that passes there and fails on a native
+download changes between runs don't look like regressions. Linux runs every
+selected recipe first. By default, macOS then runs, with Apple's tools and
+with Russet's native replacements, only the recipes that failed on Linux,
+because macOS runners are scarce; set **macos_runs** to `all` to run every
+recipe on macOS too. The macOS run with Apple's tools is the baseline: a recipe that passes there and fails on a native
 leg fails the comparison, unless the failure is a network diagnostic or, on
 Linux, an operation Russet supports only on macOS, such as installing a
 package. By default it runs the recipes that completed on macOS in

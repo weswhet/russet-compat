@@ -43,10 +43,16 @@ on:
         type: string
         default: '600'
       shards:
-        description: 'Shards per leg, from 1 to 16'
+        description: 'Linux shards, from 1 to 16'
         required: true
         type: string
-        default: '4'
+        default: '14'
+      macos_runs:
+        description: 'Recipes to run on macOS, with Apple tools and natively: only those that fail on Linux, or every selected recipe'
+        required: true
+        type: choice
+        options: ['linux-failures', 'all']
+        default: linux-failures
 permissions:
   contents: read
 jobs:
@@ -56,6 +62,7 @@ jobs:
     outputs:
       paths: ${{ steps.select.outputs.paths }}
       shards: ${{ steps.select.outputs.shards }}
+      shard_count: ${{ steps.select.outputs.shard_count }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -83,186 +90,106 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('paths=' + json.dumps(paths) + '\n')
               output.write('shards=' + json.dumps(list(range(shards))) + '\n')
+              output.write(f'shard_count={shards}\n')
           PYTHON
-  run:
-    name: ${{ matrix.leg }} shard ${{ matrix.shard }}
+  linux:
+    name: linux
     needs: select
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix:
-        leg: [apple, native, linux]
         shard: ${{ fromJSON(needs.select.outputs.shards) }}
-        include:
-          - leg: apple
-            os: macos-15
-            target: aarch64-apple-darwin
-            native: ''
-          - leg: native
-            os: macos-15
-            target: aarch64-apple-darwin
-            native: all
-          - leg: linux
-            os: ubuntu-24.04
-            target: x86_64-unknown-linux-gnu
-            native: ''
+    uses: ./.github/workflows/live-recipe-shard.yml
+    with:
+      leg: linux
+      os: ubuntu-24.04
+      target: x86_64-unknown-linux-gnu
+      shard: ${{ matrix.shard }}
+      shards: ${{ needs.select.outputs.shard_count }}
+      recipe_paths: ${{ needs.select.outputs.paths }}
+      recipe_set: ${{ inputs.recipe_set }}
+      recipe_ref: ${{ inputs.recipe_ref }}
+      russet_ref: ${{ inputs.russet_ref }}
+      russet_release: ${{ inputs.russet_release }}
+      authenticate_github: ${{ inputs.authenticate_github }}
+      timeout: ${{ inputs.timeout }}
+  # macOS runs only what it needs to: every recipe when macos_runs is all,
+  # otherwise just the recipes that failed on Linux, to tell Russet bugs from
+  # recipes that fail with Apple's tools too.
+  triage:
+    name: Choose recipes for macOS
+    needs: [select, linux]
+    if: always() && needs.select.result == 'success'
+    runs-on: ubuntu-24.04
+    outputs:
+      paths: ${{ steps.choose.outputs.paths }}
+      shards: ${{ steps.choose.outputs.shards }}
+      shard_count: ${{ steps.choose.outputs.shard_count }}
+      count: ${{ steps.choose.outputs.count }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        if: inputs.macos_runs == 'linux-failures'
         with:
-          persist-credentials: false
-      - name: Check out Russet
-        if: inputs.russet_release == ''
-        uses: actions/checkout@v7
-        with:
-          repository: weswhet/russet
-          ref: ${{ inputs.russet_ref }}
-          path: russet
-          persist-credentials: false
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.11.9'
-      - run: python -m pip install PyYAML==6.0.3
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Fetch exact upstream recipes
-        if: inputs.recipe_set != 'org-sample'
+          pattern: live-linux-*
+          path: ${{ runner.temp }}/linux
+      - id: choose
         env:
-          RECIPE_REF: ${{ inputs.recipe_ref }}
-        run: |
-          [[ "$RECIPE_REF" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'recipe_ref must be a full commit SHA'; exit 1; }
-          git init "$RUNNER_TEMP/upstream-recipes"
-          git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
-          git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
-          test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
-      # Each repository goes in its own folder at its pinned commit, with
-      # autopkg/recipes in recipes/, so parents resolve across repositories.
-      # The combined tree is committed so the harness can check it stays
-      # unchanged.
-      - name: Fetch the pinned community recipe repositories
-        if: inputs.recipe_set == 'org-sample'
+          MACOS_RUNS: ${{ inputs.macos_runs }}
+          SELECTED: ${{ needs.select.outputs.paths }}
         run: |
           python3 - <<'PYTHON'
-          import json, os, pathlib, re, subprocess, tarfile, urllib.request
-          manifest = json.load(open('samples/org-recipes-2026-10-08.json'))
-          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'upstream-recipes'
-          root.mkdir()
-          repos = {'recipes': manifest['core_recipes']['commit'], **manifest['repositories']}
-          for name, commit in repos.items():
-              if not re.fullmatch(r'[A-Za-z0-9._-]+', name) or not re.fullmatch(r'[0-9a-f]{40}', commit):
-                  raise ValueError(f'bad repository entry {name} {commit}')
-              url = f'https://codeload.github.com/autopkg/{name}/tar.gz/{commit}'
-              with urllib.request.urlopen(url) as response, tarfile.open(fileobj=response, mode='r|gz') as archive:
-                  archive.extractall(root / '.download', filter='data')
-              (root / '.download' / f'{name}-{commit}').rename(root / name)
-          (root / '.download').rmdir()
-          subprocess.run(['git', 'init', '-q', str(root)], check=True)
-          subprocess.run(['git', '-C', str(root), 'add', '-A'], check=True)
-          subprocess.run(['git', '-C', str(root), '-c', 'user.name=live', '-c', 'user.email=live@invalid',
-                          'commit', '-qm', 'Pinned recipe repositories'], check=True)
-          print(f'{len(repos)} repositories fetched')
+          import json, math, os, pathlib
+          if os.environ['MACOS_RUNS'] == 'all':
+              paths = json.loads(os.environ['SELECTED'])
+              count = len(paths) or 'all'
+              shards = 4
+          else:
+              paths = []
+              for summary in sorted(pathlib.Path(os.environ['RUNNER_TEMP'], 'linux').rglob('summary.json')):
+                  for result in json.loads(summary.read_text())['results']:
+                      # A macOS-only operation needs no baseline to excuse it.
+                      if result['status'] != 'passed' and result['diagnostic_category'] != 'unsupported_platform':
+                          paths.append(result['path'])
+              count = len(paths)
+              shards = min(5, max(1, math.ceil(count / 12)))
+          print(f'{count} recipes for macOS in {shards} shards per leg')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('paths=' + json.dumps(sorted(paths)) + '\n')
+              output.write('shards=' + json.dumps(list(range(shards))) + '\n')
+              output.write(f'shard_count={shards}\ncount={count}\n')
           PYTHON
-      # Every leg runs Russet the way users get it: a packaged archive
-      # installed with its install.sh, then /usr/local/bin/russet.
-      - name: Build and package Russet
-        if: inputs.russet_release == ''
-        working-directory: russet/rust
-        env:
-          RUSSET_REF: ${{ inputs.russet_ref }}
-          TARGET: ${{ matrix.target }}
-        run: |
-          cargo build --locked --release --target "$TARGET" -p russet
-          cargo xtask package --target "$TARGET" --bin-dir "target/$TARGET/release"
-          tar -xzf "dist/russet-development-$TARGET.tar.gz" -C "$RUNNER_TEMP"
-          mv "$RUNNER_TEMP/russet-development-$TARGET" "$RUNNER_TEMP/russet-archive"
-          echo "Russet \`$RUSSET_REF\` at \`$(git rev-parse HEAD)\`, packaged with \`cargo xtask package\`" | tee -a "$GITHUB_STEP_SUMMARY"
-      - name: Download the Russet release
-        if: inputs.russet_release != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.russet_release }}
-          TARGET: ${{ matrix.target }}
-        run: |
-          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'russet_release must be a version such as 0.0.1'; exit 1; }
-          download="$RUNNER_TEMP/russet-release"
-          mkdir "$download"
-          gh release download "rust-v$VERSION" -R weswhet/russet -D "$download" \
-            -p SHA256SUMS -p "russet-$VERSION-$TARGET.tar.gz"
-          (cd "$download" && grep " russet-$VERSION-$TARGET.tar.gz\$" SHA256SUMS | shasum -a 256 -c -)
-          tar -xzf "$download/russet-$VERSION-$TARGET.tar.gz" -C "$RUNNER_TEMP"
-          mv "$RUNNER_TEMP/russet-$VERSION-$TARGET" "$RUNNER_TEMP/russet-archive"
-          commit=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["source_commit"])' "$RUNNER_TEMP/russet-archive/RELEASE.json")
-          echo "Russet release \`rust-v$VERSION\` (\`russet-$VERSION-$TARGET.tar.gz\`, source \`$commit\`)" | tee -a "$GITHUB_STEP_SUMMARY"
-      - name: Install Russet
-        run: |
-          test "$RUNNER_ENVIRONMENT" = github-hosted
-          sudo /bin/sh "$RUNNER_TEMP/russet-archive/install.sh" install
-          /usr/local/bin/russet version
-      - name: Write GitHub API token outside evidence
-        if: inputs.authenticate_github
-        env:
-          LIVE_GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          python - <<'PYTHON'
-          import os, pathlib
-          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'autopkg-github-token'
-          descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-          with os.fdopen(descriptor, 'w') as token_file:
-              token_file.write(os.environ['LIVE_GITHUB_TOKEN'])
-          PYTHON
-      - name: Run this shard's recipes
-        env:
-          RUSSET_NATIVE: ${{ matrix.native }}
-          RECIPE_TIMEOUT: ${{ inputs.timeout }}
-          SHARD: ${{ matrix.shard }}
-          SHARDS: ${{ inputs.shards }}
-          RECIPE_SET: ${{ inputs.recipe_set }}
-          RECIPE_PATHS: ${{ needs.select.outputs.paths }}
-          AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
-          LEG: ${{ matrix.leg }}
-        run: |
-          python - <<'PYTHON'
-          import json, os, pathlib, subprocess, sys
-          root = pathlib.Path(os.environ['RUNNER_TEMP'])
-          command = [sys.executable, 'Scripts/run_live_recipes.py',
-                     '--rust', '/usr/local/bin/russet',
-                     '--recipes', str(root / 'upstream-recipes'),
-                     '--output', str(root / 'live-evidence'),
-                     '--timeout', os.environ['RECIPE_TIMEOUT'],
-                     '--shard', os.environ['SHARD'], '--shards', os.environ['SHARDS']]
-          if os.environ['RECIPE_SET'] == 'org-sample':
-              for folder in sorted((root / 'upstream-recipes').iterdir()):
-                  if folder.is_dir() and not folder.name.startswith('.'):
-                      command += ['--search-dir', str(folder)]
-          if os.environ['LEG'] == 'linux':
-              command += ['--collect-outputs', str(root / 'built-outputs')]
-          if os.environ['AUTHENTICATE_GITHUB'] == 'true':
-              command += ['--github-token-file', str(root / 'autopkg-github-token')]
-          for path in json.loads(os.environ['RECIPE_PATHS']):
-              command += ['--select', path]
-          # Failures are compared across legs in the next job.
-          subprocess.call(command)
-          PYTHON
-      - name: Upload evidence
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: live-${{ matrix.leg }}-${{ matrix.shard }}
-          path: |
-            ${{ runner.temp }}/live-evidence
-            !${{ runner.temp }}/live-evidence/**/work/**
-          if-no-files-found: error
-          retention-days: 14
-      - name: Upload packages and disk images built on Linux
-        if: always() && matrix.leg == 'linux'
-        uses: actions/upload-artifact@v7
-        with:
-          name: built-outputs-${{ matrix.shard }}
-          path: ${{ runner.temp }}/built-outputs
-          if-no-files-found: warn
-          retention-days: 7
+  macos:
+    name: ${{ matrix.leg }}
+    needs: triage
+    if: always() && needs.triage.result == 'success' && needs.triage.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        leg: [apple, native]
+        shard: ${{ fromJSON(needs.triage.outputs.shards) }}
+        include:
+          - leg: apple
+            native: ''
+          - leg: native
+            native: all
+    uses: ./.github/workflows/live-recipe-shard.yml
+    with:
+      leg: ${{ matrix.leg }}
+      os: macos-15
+      target: aarch64-apple-darwin
+      native: ${{ matrix.native }}
+      shard: ${{ matrix.shard }}
+      shards: ${{ needs.triage.outputs.shard_count }}
+      recipe_paths: ${{ needs.triage.outputs.paths }}
+      recipe_set: ${{ inputs.recipe_set }}
+      recipe_ref: ${{ inputs.recipe_ref }}
+      russet_ref: ${{ inputs.russet_ref }}
+      russet_release: ${{ inputs.russet_release }}
+      authenticate_github: ${{ inputs.authenticate_github }}
+      timeout: ${{ inputs.timeout }}
   compare:
     name: Compare legs
-    needs: run
+    needs: [linux, macos]
     if: always()
     runs-on: ubuntu-24.04
     steps:
@@ -274,11 +201,16 @@ jobs:
           pattern: live-*
           path: ${{ runner.temp }}/evidence
       - name: Compare macOS (Apple tools), macOS (native), and Linux
+        env:
+          MACOS_RUNS: ${{ inputs.macos_runs }}
         run: |
           e="$RUNNER_TEMP/evidence"
           mkdir -p "$e/apple" "$e/native" "$e/linux"
-          for leg in apple native linux; do mv "$e"/live-$leg-* "$e/$leg/"; done
+          for leg in apple native linux; do
+            for d in "$e"/live-$leg-*; do [ -e "$d" ] && mv "$d" "$e/$leg/"; done
+          done
           python3 Scripts/compare_live_legs.py --apple "$e/apple" --native "$e/native" --linux "$e/linux" \
+            --macos-runs "$MACOS_RUNS" \
             --output "$RUNNER_TEMP/comparison.json" --markdown "$RUNNER_TEMP/comparison.md"
       - if: always()
         run: cat "$RUNNER_TEMP/comparison.md" >> "$GITHUB_STEP_SUMMARY"
@@ -291,7 +223,7 @@ jobs:
             ${{ runner.temp }}/comparison.md
   verify-linux-outputs:
     name: Check Linux-built outputs with Apple's tools
-    needs: run
+    needs: linux
     if: always()
     runs-on: macos-15
     steps:

@@ -1,0 +1,179 @@
+name: Live recipe shard
+# One shard of one leg of live-recipes-linux.yml: installs Russet, fetches the
+# recipes, runs this shard's share of them, and uploads the evidence.
+on:
+  workflow_call:
+    inputs:
+      leg: {type: string, required: true}
+      os: {type: string, required: true}
+      target: {type: string, required: true}
+      native: {type: string, required: false, default: ''}
+      shard: {type: string, required: true}
+      shards: {type: string, required: true}
+      recipe_paths: {type: string, required: true}
+      recipe_set: {type: string, required: true}
+      recipe_ref: {type: string, required: true}
+      russet_ref: {type: string, required: true}
+      russet_release: {type: string, required: false, default: ''}
+      authenticate_github: {type: boolean, required: true}
+      timeout: {type: string, required: true}
+permissions:
+  contents: read
+jobs:
+  run:
+    name: ${{ inputs.leg }} shard ${{ inputs.shard }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        if: inputs.russet_release == ''
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ inputs.russet_ref }}
+          path: russet
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11.9'
+      - run: python -m pip install PyYAML==6.0.3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fetch exact upstream recipes
+        if: inputs.recipe_set != 'org-sample'
+        env:
+          RECIPE_REF: ${{ inputs.recipe_ref }}
+        run: |
+          [[ "$RECIPE_REF" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'recipe_ref must be a full commit SHA'; exit 1; }
+          git init "$RUNNER_TEMP/upstream-recipes"
+          git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
+          git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
+      # Each repository goes in its own folder at its pinned commit, with
+      # autopkg/recipes in recipes/, so parents resolve across repositories.
+      # The combined tree is committed so the harness can check it stays
+      # unchanged.
+      - name: Fetch the pinned community recipe repositories
+        if: inputs.recipe_set == 'org-sample'
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, pathlib, re, subprocess, tarfile, urllib.request
+          manifest = json.load(open('samples/org-recipes-2026-10-08.json'))
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'upstream-recipes'
+          root.mkdir()
+          repos = {'recipes': manifest['core_recipes']['commit'], **manifest['repositories']}
+          for name, commit in repos.items():
+              if not re.fullmatch(r'[A-Za-z0-9._-]+', name) or not re.fullmatch(r'[0-9a-f]{40}', commit):
+                  raise ValueError(f'bad repository entry {name} {commit}')
+              url = f'https://codeload.github.com/autopkg/{name}/tar.gz/{commit}'
+              with urllib.request.urlopen(url) as response, tarfile.open(fileobj=response, mode='r|gz') as archive:
+                  archive.extractall(root / '.download', filter='data')
+              (root / '.download' / f'{name}-{commit}').rename(root / name)
+          (root / '.download').rmdir()
+          subprocess.run(['git', 'init', '-q', str(root)], check=True)
+          subprocess.run(['git', '-C', str(root), 'add', '-A'], check=True)
+          subprocess.run(['git', '-C', str(root), '-c', 'user.name=live', '-c', 'user.email=live@invalid',
+                          'commit', '-qm', 'Pinned recipe repositories'], check=True)
+          print(f'{len(repos)} repositories fetched')
+          PYTHON
+      # Every leg runs Russet the way users get it: a packaged archive
+      # installed with its install.sh, then /usr/local/bin/russet.
+      - name: Build and package Russet
+        if: inputs.russet_release == ''
+        working-directory: russet/rust
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          cargo build --locked --release --target "$TARGET" -p russet
+          cargo xtask package --target "$TARGET" --bin-dir "target/$TARGET/release"
+          tar -xzf "dist/russet-development-$TARGET.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/russet-development-$TARGET" "$RUNNER_TEMP/russet-archive"
+          echo "Russet \`$RUSSET_REF\` at \`$(git rev-parse HEAD)\`, packaged with \`cargo xtask package\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Download the Russet release
+        if: inputs.russet_release != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.russet_release }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'russet_release must be a version such as 0.0.1'; exit 1; }
+          download="$RUNNER_TEMP/russet-release"
+          mkdir "$download"
+          gh release download "rust-v$VERSION" -R weswhet/russet -D "$download" \
+            -p SHA256SUMS -p "russet-$VERSION-$TARGET.tar.gz"
+          (cd "$download" && grep " russet-$VERSION-$TARGET.tar.gz\$" SHA256SUMS | shasum -a 256 -c -)
+          tar -xzf "$download/russet-$VERSION-$TARGET.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/russet-$VERSION-$TARGET" "$RUNNER_TEMP/russet-archive"
+          commit=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["source_commit"])' "$RUNNER_TEMP/russet-archive/RELEASE.json")
+          echo "Russet release \`rust-v$VERSION\` (\`russet-$VERSION-$TARGET.tar.gz\`, source \`$commit\`)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Install Russet
+        run: |
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          sudo /bin/sh "$RUNNER_TEMP/russet-archive/install.sh" install
+          /usr/local/bin/russet version
+      - name: Write GitHub API token outside evidence
+        if: inputs.authenticate_github
+        env:
+          LIVE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PYTHON'
+          import os, pathlib
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'autopkg-github-token'
+          descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(descriptor, 'w') as token_file:
+              token_file.write(os.environ['LIVE_GITHUB_TOKEN'])
+          PYTHON
+      - name: Run this shard's recipes
+        env:
+          RUSSET_NATIVE: ${{ inputs.native }}
+          RECIPE_TIMEOUT: ${{ inputs.timeout }}
+          SHARD: ${{ inputs.shard }}
+          SHARDS: ${{ inputs.shards }}
+          RECIPE_SET: ${{ inputs.recipe_set }}
+          RECIPE_PATHS: ${{ inputs.recipe_paths }}
+          AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
+          LEG: ${{ inputs.leg }}
+        run: |
+          python - <<'PYTHON'
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          command = [sys.executable, 'Scripts/run_live_recipes.py',
+                     '--rust', '/usr/local/bin/russet',
+                     '--recipes', str(root / 'upstream-recipes'),
+                     '--output', str(root / 'live-evidence'),
+                     '--timeout', os.environ['RECIPE_TIMEOUT'],
+                     '--shard', os.environ['SHARD'], '--shards', os.environ['SHARDS']]
+          if os.environ['RECIPE_SET'] == 'org-sample':
+              for folder in sorted((root / 'upstream-recipes').iterdir()):
+                  if folder.is_dir() and not folder.name.startswith('.'):
+                      command += ['--search-dir', str(folder)]
+          if os.environ['LEG'] == 'linux':
+              command += ['--collect-outputs', str(root / 'built-outputs')]
+          if os.environ['AUTHENTICATE_GITHUB'] == 'true':
+              command += ['--github-token-file', str(root / 'autopkg-github-token')]
+          for path in json.loads(os.environ['RECIPE_PATHS']):
+              command += ['--select', path]
+          # Failures are compared across legs in the next job.
+          subprocess.call(command)
+          PYTHON
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: live-${{ inputs.leg }}-${{ inputs.shard }}
+          path: |
+            ${{ runner.temp }}/live-evidence
+            !${{ runner.temp }}/live-evidence/**/work/**
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload packages and disk images built on Linux
+        if: always() && inputs.leg == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: built-outputs-${{ inputs.shard }}
+          path: ${{ runner.temp }}/built-outputs
+          if-no-files-found: warn
+          retention-days: 7
