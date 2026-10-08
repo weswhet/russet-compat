@@ -54,10 +54,12 @@ def classify(status, log):
     if status == "timeout":
         return "timeout"
     lowered = log.lower()
-    if any(text in lowered for text in ("custom processor", "unknown processor", "not a built-in processor", "python processor")):
-        return "unsupported_processor"
+    # A macOS-only operation is reported before a processor boundary, since
+    # either log line can appear in the same run.
     if "only supported on macos" in lowered or "requires macos" in lowered:
         return "unsupported_platform"
+    if any(text in lowered for text in ("custom processor", "unknown processor", "not a built-in processor", "python processor")):
+        return "unsupported_processor"
     if "parent" in lowered and any(text in lowered for text in ("not found", "could not", "unable to", "missing")):
         return "missing_parent"
     # These labels describe observed diagnostics, not whether Python would pass.
