@@ -82,7 +82,7 @@ jobs:
       - name: Verify Russet's frozen contract against the pinned source
         run: python Scripts/capture_rust_contract.py --check
       - name: Build the native MSVC development executable
-        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --target x86_64-pc-windows-msvc -p autopkg-rs
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --target x86_64-pc-windows-msvc -p russet
       - name: Test native Windows comparison normalization
         run: python Scripts/test_rust_windows_native.py
       - name: Compare native Windows processor defaults with Python
@@ -90,20 +90,20 @@ jobs:
         run: >-
           python Scripts/differential_rust_windows_native.py
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
           --results windows-native-differential.json
       - name: Compare real Python portable processor fixtures
         run: >-
           python Scripts/differential_rust_processors.py
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
           --coverage-output windows-portable-coverage.json
       - name: Compare portable processor logs at verbosity 2
         if: ${{ !cancelled() }}
         run: >-
           python Scripts/differential_rust_processors.py
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
           --verbose 2
           --coverage-output windows-portable-verbose-coverage.json
       - name: Compare real Python HTTP, authentication, and download cache fixtures
@@ -111,27 +111,27 @@ jobs:
         run: >-
           python Scripts/differential_rust_http.py --verbose 2
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
       - name: Compare real Python CLI, reports, persistence, and Git transport
         if: ${{ !cancelled() }}
         run: >-
           python Scripts/differential_rust_cli.py
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
           --results windows-cli-results.json
       - name: Compare TLS trust and hostname failures
         if: ${{ !cancelled() }}
         run: >-
           python Scripts/differential_rust_tls.py
           --python .reference-venv/Scripts/python.exe
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
       - name: Compare portable predicates with captured native Foundation results
         if: ${{ !cancelled() }}
         # Pinned Python cannot execute NSPredicate on Windows. This separate gate
         # uses the actual macOS oracle, never a Python predicate replacement.
         run: >-
           python Scripts/differential_rust_processors.py
-          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/autopkg-rs.exe
+          --rust russet/rust/target/x86_64-pc-windows-msvc/debug/russet.exe
           --fixtures russet/compatibility/predicate-fixtures.json
           --frozen-reference russet/compatibility/predicate-reference-results.json
       - uses: actions/upload-artifact@v7

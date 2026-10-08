@@ -21,7 +21,7 @@ REFERENCE_COMMIT = "c36e58f8d3d8ddb70b6c2d848d2ceca7f767ce5c"
 # Russet owns the frozen contracts and fixtures; this repository owns the
 # pinned community processor sources that the community suites import.
 COMPATIBILITY = RUSSET / "compatibility"
-RUST_DEBUG_CLI = RUSSET / "rust/target/debug/autopkg-rs"
+RUST_DEBUG_CLI = RUSSET / "rust/target/debug/russet"
 COMMUNITY_SOURCE = ROOT / "community-source"
 
 # A bare repository that holds only the pinned commit, so the suites can read

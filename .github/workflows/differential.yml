@@ -83,7 +83,7 @@ jobs:
           python Scripts/capture_rust_contract.py --check
           python Scripts/capture_community_processors.py --check
       - name: Build the Russet development executable
-        run: cargo build --manifest-path russet/rust/Cargo.toml --locked -p autopkg-rs
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked -p russet
       - name: Compare isolated portable processor fixtures
         run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON"
       - name: Compare portable processor logs at verbosity 2
@@ -98,13 +98,13 @@ jobs:
         run: python Scripts/differential_rust_cli.py --python "$REFERENCE_PYTHON"
       - name: Compare promoted metadata providers
         if: runner.os == 'macOS'
-        run: python Scripts/differential_community_modern.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON"
+        run: python Scripts/differential_community_modern.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON"
       - name: Compare promoted Adobe, Puppet, and Sassafras processors
         if: runner.os == 'macOS'
-        run: python Scripts/differential_community_legacy.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON"
+        run: python Scripts/differential_community_legacy.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON"
       - name: Compare promoted builders and verify relocated framework artifact
         if: runner.os == 'macOS'
-        run: python Scripts/differential_community_builders.py --rust russet/rust/target/debug/autopkg-rs --python "$REFERENCE_PYTHON" --makecatalogs /usr/local/munki/makecatalogs --live-framework
+        run: python Scripts/differential_community_builders.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON" --makecatalogs /usr/local/munki/makecatalogs --live-framework
       - name: Compare native NSPredicate fixtures
         if: runner.os == 'macOS'
         run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON" --fixtures russet/compatibility/predicate-fixtures.json

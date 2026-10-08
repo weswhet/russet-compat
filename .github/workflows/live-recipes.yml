@@ -84,10 +84,10 @@ jobs:
         working-directory: russet/rust
         run: |
           test "$RUNNER_ENVIRONMENT" = github-hosted
-          cargo build --locked --release --target aarch64-apple-darwin -p autopkg-rs -p autopkg-helpers
+          cargo build --locked --release --target aarch64-apple-darwin -p russet
           cargo xtask package --target aarch64-apple-darwin --bin-dir target/aarch64-apple-darwin/release
-          tar -xzf dist/autopkg-rs-development-aarch64-apple-darwin.tar.gz -C "$RUNNER_TEMP"
-          sudo /bin/sh "$RUNNER_TEMP/autopkg-rs-development-aarch64-apple-darwin/install.sh" install
+          tar -xzf dist/russet-development-aarch64-apple-darwin.tar.gz -C "$RUNNER_TEMP"
+          sudo /bin/sh "$RUNNER_TEMP/russet-development-aarch64-apple-darwin/install.sh" install
       - name: Extract exact published Python reference
         run: >-
           python Scripts/prepare_rust_macos_reference.py
@@ -136,7 +136,7 @@ jobs:
           if not isinstance(paths, list) or not all(isinstance(path, str) for path in paths):
               raise ValueError('recipe_paths must be a JSON array of strings')
           command = [sys.executable, 'Scripts/run_live_recipes.py',
-                     '--rust', 'russet/rust/target/aarch64-apple-darwin/release/autopkg-rs',
+                     '--rust', '/usr/local/bin/russet',
                      '--recipes', str(root / 'upstream-recipes'),
                      '--output', str(root / 'live-evidence'),
                      '--timeout', os.environ['RECIPE_TIMEOUT'],

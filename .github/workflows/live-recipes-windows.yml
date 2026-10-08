@@ -55,11 +55,11 @@ jobs:
           $actual = git -C $recipes rev-parse HEAD
           if ($LASTEXITCODE -ne 0 -or $actual -ne $env:RECIPE_REF) { throw 'Recipe snapshot mismatch' }
       - name: Build exact checked-out native executable
-        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --release --target x86_64-pc-windows-msvc -p autopkg-rs
+        run: cargo build --manifest-path russet/rust/Cargo.toml --locked --release --target x86_64-pc-windows-msvc -p russet
       - name: Download, verify signatures, and package without installing Firefox
         shell: pwsh
         run: |
-          python Scripts/run_live_windows_recipes.py --rust russet/rust/target/x86_64-pc-windows-msvc/release/autopkg-rs.exe --recipes "$env:RUNNER_TEMP/windows-upstream-recipes" --output "$env:RUNNER_TEMP/live-windows-evidence" --timeout 900
+          python Scripts/run_live_windows_recipes.py --rust russet/rust/target/x86_64-pc-windows-msvc/release/russet.exe --recipes "$env:RUNNER_TEMP/windows-upstream-recipes" --output "$env:RUNNER_TEMP/live-windows-evidence" --timeout 900
           exit $LASTEXITCODE
       - name: Upload logs, reports, provenance, downloads, and generated packages
         if: always()

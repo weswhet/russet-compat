@@ -90,7 +90,7 @@ Python 3.11.9, the version that AutoPkg 3.0.0 ships.
 1. Build Russet:
 
    ```sh
-   cargo build --manifest-path russet/rust/Cargo.toml --locked -p autopkg-rs
+   cargo build --manifest-path russet/rust/Cargo.toml --locked -p russet
    ```
 
 1. Run a suite:
