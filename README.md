@@ -153,10 +153,6 @@ On Linux, the CLI suite accepts one deliberate difference: Russet's
 `False`, because Russet extracts archives with its built-in `ditto`
 replacement there, where Python AutoPkg shows `True`.
 
-`Scripts/verify_rust_macos_upgrade.sh` upgrades a running Python AutoPkg
-installation to Russet and then restores it. It runs only as root inside an
-empty, disposable macOS virtual machine, and it refuses to run anywhere else.
-
 ## Evidence
 
 The `evidence/` folder keeps the results that these suites recorded while
