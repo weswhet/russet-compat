@@ -9,6 +9,9 @@ must accept the checksums, and the image must attach read-only.
 
 A command that exceeds its time limit doesn't fail the check. The output is
 listed as skipped, so one slow image can't hide the results for the rest.
+An image that asks for a license agreement before it attaches is also skipped:
+the check doesn't accept license terms on anyone's behalf, but its checksums
+are still verified.
 """
 import argparse
 import json
@@ -58,6 +61,7 @@ def check_package(path):
 
 
 def check_image(path):
+    """Returns the problems found, and the reason the attach was skipped, if it was."""
     problems = []
     verify = run("/usr/bin/hdiutil", "verify", str(path))
     if verify.returncode:
@@ -66,10 +70,13 @@ def check_image(path):
         attach = run("/usr/bin/hdiutil", "attach", "-readonly", "-nobrowse", "-noverify",
                      "-mountpoint", mount, str(path))
         if attach.returncode:
+            # hdiutil cancels when it would need someone to accept a license.
+            if "attach canceled" in attach.stderr:
+                return problems, "requires accepting a license agreement, which the check doesn't do"
             problems.append(f"hdiutil attach failed: {attach.stderr.strip()}")
         else:
             run("/usr/bin/hdiutil", "detach", mount, "-force")
-    return problems
+    return problems, None
 
 
 def main():
@@ -81,10 +88,19 @@ def main():
     for path in sorted(p for p in args.outputs.rglob("*") if p.suffix.lower() in (".pkg", ".dmg") and p.is_file()):
         name = str(path.relative_to(args.outputs))
         try:
-            problems = check_package(path) if path.suffix.lower() == ".pkg" else check_image(path)
+            if path.suffix.lower() == ".pkg":
+                problems, skip = check_package(path), None
+            else:
+                problems, skip = check_image(path)
         except TimedOut as error:
             results.append({"path": name, "problems": [], "skipped": str(error)})
             print("SKIP " + name + ": " + str(error))
+            continue
+        if skip:
+            results.append({"path": name, "problems": problems, "skipped": skip})
+            print("SKIP " + name + ": " + skip)
+            for problem in problems:
+                print("     " + problem)
             continue
         results.append({"path": name, "problems": problems})
         print(("FAIL " if problems else "OK   ") + name)
