@@ -150,9 +150,11 @@ package. By default it runs the recipes that completed on macOS in
 
 Set **recipe_set** to `org-sample` to run a sample of community recipes from
 the other `autopkg` organization repositories instead. The sample, in
-`samples/org-recipes-2026-10-08.json`, holds up to one download, one pkg, and
-one munki recipe from each repository, all using only processors that Russet
-implements and none installing software. It pins each repository's commit, and
+`samples/org-recipes-2026-10-08.json`, holds up to two download, two pkg, and
+two dmg recipes from each repository. Each one uses only processors that
+Russet implements, installs nothing, and runs at least one of the tools that
+Russet replaces on Linux: `codesign`, `hdiutil`, `ditto`, `pkgutil`, or
+`pkgbuild`. Recipes that upload to Munki or other services aren't included. It pins each repository's commit, and
 the workflow puts every repository on the recipe search path so that parent
 recipes resolve across repositories.
 
