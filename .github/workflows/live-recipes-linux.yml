@@ -7,10 +7,15 @@ on:
   workflow_dispatch:
     inputs:
       russet_ref:
-        description: 'weswhet/russet branch, tag, or commit to build and run'
+        description: 'weswhet/russet branch, tag, or commit to build, package, and install (ignored when russet_release is set)'
         required: true
         type: string
         default: main
+      russet_release:
+        description: 'Published weswhet/russet release version to download and install instead of building, for example 0.0.1'
+        required: false
+        type: string
+        default: ''
       recipe_ref:
         description: 'Exact autopkg/recipes commit to exercise'
         required: true
@@ -94,16 +99,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Check out Russet
+        if: inputs.russet_release == ''
         uses: actions/checkout@v7
         with:
           repository: weswhet/russet
           ref: ${{ inputs.russet_ref }}
           path: russet
           persist-credentials: false
-      - name: Record the Russet commit under test
-        env:
-          RUSSET_REF: ${{ inputs.russet_ref }}
-        run: echo "Russet \`$RUSSET_REF\` at \`$(git -C russet rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11.9'
@@ -118,17 +120,42 @@ jobs:
           git -C "$RUNNER_TEMP/upstream-recipes" fetch --depth=1 https://github.com/autopkg/recipes.git "$RECIPE_REF"
           git -C "$RUNNER_TEMP/upstream-recipes" checkout --detach FETCH_HEAD
           test "$(git -C "$RUNNER_TEMP/upstream-recipes" rev-parse HEAD)" = "$(printf %s "$RECIPE_REF" | tr A-F a-f)"
-      - name: Build Russet
+      # Every leg runs Russet the way users get it: a packaged archive
+      # installed with its install.sh, then /usr/local/bin/russet.
+      - name: Build and package Russet
+        if: inputs.russet_release == ''
         working-directory: russet/rust
-        run: cargo build --locked --release --target ${{ matrix.target }} -p autopkg-rs -p autopkg-helpers
-      - name: Install Russet's privileged helpers on macOS
-        if: runner.os == 'macOS'
-        working-directory: russet/rust
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          cargo build --locked --release --target "$TARGET" -p russet
+          cargo xtask package --target "$TARGET" --bin-dir "target/$TARGET/release"
+          tar -xzf "dist/russet-development-$TARGET.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/russet-development-$TARGET" "$RUNNER_TEMP/russet-archive"
+          echo "Russet \`$RUSSET_REF\` at \`$(git rev-parse HEAD)\`, packaged with \`cargo xtask package\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Download the Russet release
+        if: inputs.russet_release != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.russet_release }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'russet_release must be a version such as 0.0.1'; exit 1; }
+          download="$RUNNER_TEMP/russet-release"
+          mkdir "$download"
+          gh release download "rust-v$VERSION" -R weswhet/russet -D "$download" \
+            -p SHA256SUMS -p "russet-$VERSION-$TARGET.tar.gz"
+          (cd "$download" && grep " russet-$VERSION-$TARGET.tar.gz\$" SHA256SUMS | shasum -a 256 -c -)
+          tar -xzf "$download/russet-$VERSION-$TARGET.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/russet-$VERSION-$TARGET" "$RUNNER_TEMP/russet-archive"
+          commit=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["source_commit"])' "$RUNNER_TEMP/russet-archive/RELEASE.json")
+          echo "Russet release \`rust-v$VERSION\` (\`russet-$VERSION-$TARGET.tar.gz\`, source \`$commit\`)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Install Russet
         run: |
           test "$RUNNER_ENVIRONMENT" = github-hosted
-          cargo xtask package --target ${{ matrix.target }} --bin-dir target/${{ matrix.target }}/release
-          tar -xzf dist/autopkg-rs-development-${{ matrix.target }}.tar.gz -C "$RUNNER_TEMP"
-          sudo /bin/sh "$RUNNER_TEMP/autopkg-rs-development-${{ matrix.target }}/install.sh" install
+          sudo /bin/sh "$RUNNER_TEMP/russet-archive/install.sh" install
+          /usr/local/bin/russet version
       - name: Write GitHub API token outside evidence
         if: inputs.authenticate_github
         env:
@@ -148,14 +175,13 @@ jobs:
           SHARD: ${{ matrix.shard }}
           RECIPE_PATHS: ${{ needs.select.outputs.paths }}
           AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
-          TARGET: ${{ matrix.target }}
           LEG: ${{ matrix.leg }}
         run: |
           python - <<'PYTHON'
           import json, os, pathlib, subprocess, sys
           root = pathlib.Path(os.environ['RUNNER_TEMP'])
           command = [sys.executable, 'Scripts/run_live_recipes.py',
-                     '--rust', f"russet/rust/target/{os.environ['TARGET']}/release/autopkg-rs",
+                     '--rust', '/usr/local/bin/russet',
                      '--recipes', str(root / 'upstream-recipes'),
                      '--output', str(root / 'live-evidence'),
                      '--timeout', os.environ['RECIPE_TIMEOUT'],

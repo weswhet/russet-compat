@@ -126,6 +126,12 @@ The live recipe workflow installs Russet on the runner with
 `cargo xtask package` and the archive's installer, so it needs a Russet
 version that includes the `xtask` packaging command.
 
+`live-recipes-linux.yml` does the same on every leg, including Linux, and runs
+the installed `/usr/local/bin/russet`. To test a published release instead of
+building one, enter its version, such as `0.0.1`, in **russet_release**. Each
+leg then downloads that release's archive, checks it against the release's
+`SHA256SUMS`, and installs it.
+
 ## Suite notes
 
 The `docs/` folder describes two suites in more detail:
