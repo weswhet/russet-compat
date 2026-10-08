@@ -36,7 +36,7 @@ on:
         description: 'Timeout in seconds for each recipe'
         required: true
         type: string
-        default: '300'
+        default: '600'
 permissions:
   contents: read
 jobs:

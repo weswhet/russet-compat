@@ -163,6 +163,9 @@ Russet was developed:
   repository.
 - `community-live-recipes-2026-10-07.md` and `.json`: a follow-up sweep of the
   recipes that use the community processors.
+- `linux-live-recipes-2026-10-07.md` and `.json`: the same live recipes on
+  macOS with Apple's tools, on macOS with Russet's native replacements, and on
+  Linux.
 
 These records mention commits and workflow runs in Russet's earlier history,
 and they describe the code as it was then.

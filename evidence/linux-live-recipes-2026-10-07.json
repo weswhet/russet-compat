@@ -1,0 +1,761 @@
+{
+  "date_utc": "2026-10-07",
+  "workflow": "live-recipes-linux.yml",
+  "runs": {
+    "first": "https://github.com/weswhet/russet-compat/actions/runs/37713075204",
+    "second": "https://github.com/weswhet/russet-compat/actions/runs/37716394267",
+    "final": "https://github.com/weswhet/russet-compat/actions/runs/37719294313"
+  },
+  "russet_ref": "linux-apple-formats",
+  "russet_commit": "6c3be3b0",
+  "recipe_commit": "0f7b61ab061c77710be4140c404910a11f89fc7b",
+  "linux_built_outputs": {
+    "checked": 34,
+    "packages": 30,
+    "disk_images": 4,
+    "with_problems": 0
+  },
+  "counts": {
+    "apple": {
+      "passed": 121
+    },
+    "native": {
+      "passed": 120,
+      "timeout": 1
+    },
+    "linux": {
+      "passed": 108,
+      "unsupported_platform": 12,
+      "timeout": 1
+    }
+  },
+  "regressions": [],
+  "recipes": [
+    {
+      "path": "Adium/Adium.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Adium/Adium.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Adium/Adium.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Adium/Adium.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "AutoPkg/AutoPkg-Release.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "AutoPkg/AutoPkg-Release.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Cyberduck/Cyberduck.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Cyberduck/Cyberduck.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Cyberduck/Cyberduck.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Dropbox/Dropbox.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Dropbox/Dropbox.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Dropbox/Dropbox.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Evernote/Evernote.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Evernote/Evernote.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Evernote/Evernote.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChrome.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChrome.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "GoogleChrome/GoogleChrome.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChrome.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChromePkg.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChromePkg.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleChrome/GoogleChromePkg.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleEarth/GoogleEarth.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleEarth/GoogleEarth.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "GoogleEarth/GoogleEarth.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Handbrake/Handbrake.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Handbrake/Handbrake.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Handbrake/Handbrake.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/FirefoxSignedPkg.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/FirefoxSignedPkg.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Mozilla/FirefoxSignedPkg.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/FirefoxSignedPkg.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/ThunderbirdSignedPkg.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/ThunderbirdSignedPkg.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Mozilla/ThunderbirdSignedPkg.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Mozilla/ThunderbirdSignedPkg.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniDiskSweeper.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniDiskSweeper.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "OmniGroup/OmniDiskSweeper.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniDiskSweeper.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus2.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus2.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "OmniGroup/OmniFocus2.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus2.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus3.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus3.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "OmniGroup/OmniFocus3.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus3.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus4.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus4.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "OmniGroup/OmniFocus4.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniFocus4.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle6.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle6.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle6.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle7.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle7.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraffle7.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGrafflePro.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGrafflePro.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGrafflePro.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraphSketcher.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraphSketcher.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniGraphSketcher.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner4.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner4.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner4.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner5.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner5.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutliner5.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutlinerPro.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutlinerPro.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniOutlinerPro.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan3.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan3.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "OmniGroup/OmniPlan3.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Panic/Transmit.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit5.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit5.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "Panic/Transmit5.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Panic/Transmit5.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Praat/Praat.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Praat/Praat.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Praat/Praat.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "SampleSharedProcessor/SampleSharedProcessor.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Spotify/Spotify.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "Spotify/Spotify.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "TextMate/TextMate2.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "TextMate/TextMate2.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "unsupported_platform"
+    },
+    {
+      "path": "TextMate/TextMate2.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "The Unarchiver/TheUnarchiver.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "The Unarchiver/TheUnarchiver.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "The Unarchiver/TheUnarchiver.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "VLC/VLC.download.recipe",
+      "apple": "passed",
+      "native": "timeout",
+      "linux": "passed"
+    },
+    {
+      "path": "VLC/VLC.install.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "timeout"
+    },
+    {
+      "path": "VLC/VLC.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "VLC/VLC.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "XLD/XLD.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "XLD/XLD.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "XLD/XLD.pkg.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "XQuartz/XQuartz.download.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "XQuartz/XQuartz.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "munkitools/munkitools.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "munkitools/munkitools6-signed.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "munkitools/munkitools6.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    },
+    {
+      "path": "munkitools/munkitools7.munki.recipe",
+      "apple": "passed",
+      "native": "passed",
+      "linux": "passed"
+    }
+  ]
+}
