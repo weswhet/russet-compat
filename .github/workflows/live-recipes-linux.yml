@@ -43,10 +43,15 @@ on:
         type: string
         default: '600'
       shards:
-        description: 'Linux shards, from 1 to 16'
+        description: 'Linux shards, from 1 to 32'
         required: true
         type: string
         default: '14'
+      macos_shards:
+        description: 'macOS shards per leg, from 1 to 32; auto runs 8 when macos_runs is all, otherwise one per 12 Linux failures (up to 8)'
+        required: true
+        type: string
+        default: 'auto'
       macos_runs:
         description: 'Recipes to run on macOS, with Apple tools and natively: only those that fail on Linux, or every selected recipe'
         required: true
@@ -79,8 +84,8 @@ jobs:
           if not isinstance(paths, list) or not all(isinstance(p, str) for p in paths):
               raise ValueError('recipe_paths must be a JSON array of strings')
           shards = int(os.environ['SHARDS'])
-          if not 1 <= shards <= 16:
-              raise ValueError('shards must be from 1 to 16')
+          if not 1 <= shards <= 32:
+              raise ValueError('shards must be from 1 to 32')
           if not paths and os.environ['RECIPE_SET'] == 'macos-completed':
               evidence = json.load(open('evidence/live-recipes-2026-10-07.json'))
               paths = [r['recipe'] for r in evidence['recipes'] if r['final']['status'] == 'passed']
@@ -135,6 +140,7 @@ jobs:
       - id: choose
         env:
           MACOS_RUNS: ${{ inputs.macos_runs }}
+          MACOS_SHARDS: ${{ inputs.macos_shards }}
           SELECTED: ${{ needs.select.outputs.paths }}
         run: |
           python3 - <<'PYTHON'
@@ -142,7 +148,7 @@ jobs:
           if os.environ['MACOS_RUNS'] == 'all':
               paths = json.loads(os.environ['SELECTED'])
               count = len(paths) or 'all'
-              shards = 4
+              shards = 8
           else:
               paths = []
               for summary in sorted(pathlib.Path(os.environ['RUNNER_TEMP'], 'linux').rglob('summary.json')):
@@ -151,7 +157,13 @@ jobs:
                       if result['status'] != 'passed' and result['diagnostic_category'] != 'unsupported_platform':
                           paths.append(result['path'])
               count = len(paths)
-              shards = min(5, max(1, math.ceil(count / 12)))
+              shards = min(8, max(1, math.ceil(count / 12)))
+          if os.environ['MACOS_SHARDS'] != 'auto':
+              shards = int(os.environ['MACOS_SHARDS'])
+              if not 1 <= shards <= 32:
+                  raise ValueError('macos_shards must be auto or from 1 to 32')
+          if isinstance(count, int):
+              shards = max(1, min(shards, count))
           print(f'{count} recipes for macOS in {shards} shards per leg')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('paths=' + json.dumps(sorted(paths)) + '\n')
