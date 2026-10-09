@@ -11,7 +11,9 @@ A command that exceeds its time limit doesn't fail the check. The output is
 listed as skipped, so one slow image can't hide the results for the rest.
 An image that asks for a license agreement before it attaches is also skipped:
 the check doesn't accept license terms on anyone's behalf, but its checksums
-are still verified.
+are still verified. An empty file is skipped too: vendors sometimes ship a
+0-byte placeholder named like a package (Zwift puts one in its Scripts), and
+Apple's `pkgutil --expand` extracts it as the same empty file.
 """
 import argparse
 import json
@@ -87,6 +89,10 @@ def main():
     results = []
     for path in sorted(p for p in args.outputs.rglob("*") if p.suffix.lower() in (".pkg", ".dmg") and p.is_file()):
         name = str(path.relative_to(args.outputs))
+        if path.stat().st_size == 0:
+            results.append({"path": name, "problems": [], "skipped": "empty file"})
+            print("SKIP " + name + ": empty file")
+            continue
         try:
             if path.suffix.lower() == ".pkg":
                 problems, skip = check_package(path), None
