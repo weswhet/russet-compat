@@ -90,6 +90,42 @@ def cleanup_mounts(work):
     return attempts
 
 
+LOW_DISK_BYTES = 4 * 1024 ** 3
+
+
+def directory_bytes(path):
+    """Total size of the files under path, or None when it can't be read."""
+    total = 0
+    try:
+        for root, _, files in os.walk(path, onerror=lambda error: None):
+            for name in files:
+                try:
+                    total += os.lstat(os.path.join(root, name)).st_size
+                except OSError:
+                    pass
+    except OSError:
+        return None
+    return total
+
+
+def resources(output):
+    """Free disk and the places a recipe could leave files outside its work tree,
+    recorded after every recipe so a runner that later dies of a full disk or
+    leaked processes leaves evidence of the trend."""
+    snapshot = {"free_bytes": shutil.disk_usage(output).free}
+    for name, path in (("tmp", "/tmp"), ("system_tmpdir", os.environ.get("TMPDIR", "")),
+                       ("runner_temp", os.environ.get("RUNNER_TEMP", ""))):
+        if path and Path(path).is_dir():
+            snapshot[name + "_bytes"] = directory_bytes(path)
+    try:
+        processes = subprocess.run(["ps", "-axo", "pid=,rss=,command="], capture_output=True, text=True, timeout=20).stdout
+        snapshot["russet_processes"] = [line.strip()[:300] for line in processes.splitlines()
+                                        if "russet" in line and "run_live_recipes" not in line]
+    except (OSError, subprocess.SubprocessError) as error:
+        snapshot["process_error"] = str(error)
+    return snapshot
+
+
 def prepare_reference(code, output):
     isolated = output / "reference-code"
     shutil.copytree(code, isolated)
@@ -274,11 +310,22 @@ def main():
             result["comparison"] = "documented_custom_processor_boundary"
         else:
             result["comparison"] = "not_compared"
+        result["resources_after"] = resources(output)
         write_json(Path(result["log"]).parent / "result.json", result)
         summary["results"].append(result)
         summary["counts"] = dict(Counter(item["status"] for item in summary["results"]))
         write_json(output / "summary.json", summary)
-        print(f"[{index + 1}/{len(selected)}] {case['path']}: {result['status']} ({result['duration_seconds']}s)", flush=True)
+        free = result["resources_after"]["free_bytes"]
+        print(f"[{index + 1}/{len(selected)}] {case['path']}: {result['status']} ({result['duration_seconds']}s, "
+              f"{free / 1024 ** 3:.1f} GiB free)", flush=True)
+        if free < LOW_DISK_BYTES:
+            # Stop while the runner can still upload evidence; a full disk
+            # kills the runner and loses the whole shard.
+            summary["stopped_low_disk"] = {"after": case["path"], "free_bytes": free,
+                                           "skipped": [item["path"] for item in selected[index + 1:]]}
+            write_json(output / "summary.json", summary)
+            print(f"Stopping: {free / 1024 ** 3:.1f} GiB free after {case['path']}", flush=True)
+            break
     summary["complete"] = True
     summary["checkout_unchanged"] = not bool(git(recipes, "status", "--porcelain"))
     write_json(output / "summary.json", summary)
