@@ -239,6 +239,18 @@ def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=No
             result["report_parse_error"] = str(error)
     result["source_unchanged"] = hashlib.sha256((recipes / case["path"]).read_bytes()).hexdigest() == case["sha256"]
     result["mount_cleanup"] = cleanup_mounts(work)
+    # A download of a few hundred bytes is usually an error or block page in
+    # place of the real file; keep its start so the cause can be read later.
+    small = []
+    for path in sorted(work.glob("cache/*/downloads/*")):
+        try:
+            if path.is_file() and not path.is_symlink() and path.stat().st_size < 4096:
+                small.append({"name": path.name, "size": path.stat().st_size,
+                              "start": path.read_bytes()[:4096].decode("utf-8", errors="replace")})
+        except OSError:
+            pass
+    if small:
+        result["small_downloads"] = small
     if outputs is not None and result["status"] == "passed":
         result["built_outputs"] = collect_outputs(work, outputs / directory.name)
     if not keep_work:
