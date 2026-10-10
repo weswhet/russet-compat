@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import resource
 import signal
 import shutil
 import subprocess
@@ -117,6 +118,16 @@ def resources(output):
                        ("runner_temp", os.environ.get("RUNNER_TEMP", ""))):
         if path and Path(path).is_dir():
             snapshot[name + "_bytes"] = directory_bytes(path)
+    # The largest resident size of any finished child so far. It only grows,
+    # so the recipe after which it jumps is the one that used that much memory.
+    peak = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+    snapshot["peak_child_rss_bytes"] = peak if sys.platform == "darwin" else peak * 1024
+    if sys.platform == "darwin":
+        try:
+            snapshot["swap_usage"] = subprocess.run(["sysctl", "-n", "vm.swapusage"], capture_output=True,
+                                                    text=True, timeout=20).stdout.strip()
+        except (OSError, subprocess.SubprocessError) as error:
+            snapshot["swap_error"] = str(error)
     try:
         processes = subprocess.run(["ps", "-axo", "pid=,rss=,command="], capture_output=True, text=True, timeout=20).stdout
         snapshot["russet_processes"] = [line.strip()[:300] for line in processes.splitlines()
