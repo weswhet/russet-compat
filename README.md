@@ -161,6 +161,14 @@ Russet replaces on Linux: `codesign`, `hdiutil`, `ditto`, `pkgutil`, or
 the workflow puts every repository on the recipe search path so that parent
 recipes resolve across repositories.
 
+Set **recipe_set** to `org-munki` to run community munki recipes the same
+way. The sample, in `samples/org-munki-recipes-2026-10-10.json`, holds one
+munki recipe from each repository that has an eligible one. Each uses only
+processors that Russet implements, installs nothing, and imports into a
+Munki repository with `MunkiImporter`. Every recipe gets its own empty
+repository, and the evidence keeps the pkginfo and catalog files it wrote, so
+the legs can be compared file by file.
+
 On Linux, the CLI suite accepts one deliberate difference: Russet's
 `processor-info Unarchiver` shows `USE_PYTHON_NATIVE_EXTRACTOR` defaulting to
 `False`, because Russet extracts archives with its built-in `ditto`

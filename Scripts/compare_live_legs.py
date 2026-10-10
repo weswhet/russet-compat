@@ -9,10 +9,15 @@ Russet supports only on macOS, such as installing a package.
 
 With --macos-runs linux-failures, macOS ran only the recipes that failed on
 Linux, so a recipe that passed on Linux shows `not_run` on both macOS legs.
+
+For munki recipes, the pkginfo and catalogs each leg wrote are compared with
+the Apple-tools leg's, ignoring `_metadata`, which records when, where, and by
+what the pkginfo was made.
 """
 import argparse
 from collections import Counter
 import json
+import plistlib
 from pathlib import Path
 import sys
 
@@ -29,6 +34,7 @@ def load(directory):
     for summary in sorted(Path(directory).rglob("summary.json")):
         data = json.loads(summary.read_text())
         for result in data.get("results", []):
+            result["evidence_dir"] = summary.parent / Path(result["log"]).parent.name
             results[result["path"]] = result
     return results
 
@@ -44,6 +50,38 @@ def last_error(result):
         if "Error" in line or "error" in line:
             return line.strip()[:240]
     return ""
+
+
+def munki_files(result):
+    """Each pkginfo or catalog the recipe wrote, without `_metadata`."""
+    files = {}
+    for name in (result or {}).get("munki_files", []):
+        try:
+            data = plistlib.loads((result["evidence_dir"] / "munki" / name).read_bytes())
+        except Exception as error:
+            files[name] = f"unreadable: {error}"
+            continue
+        for item in data if isinstance(data, list) else [data]:
+            if isinstance(item, dict):
+                item.pop("_metadata", None)
+        files[name] = data
+    return files
+
+
+def munki_differences(baseline, other):
+    """Names and top-level keys where `other`'s Munki files differ."""
+    left, right = munki_files(baseline), munki_files(other)
+    differences = []
+    for name in sorted(set(left) | set(right)):
+        a, b = left.get(name), right.get(name)
+        if a == b:
+            continue
+        if isinstance(a, dict) and isinstance(b, dict):
+            keys = sorted(k for k in set(a) | set(b) if a.get(k) != b.get(k))
+            differences.append(f"{name}: " + ", ".join(keys))
+        else:
+            differences.append(f"{name}: {'missing' if a is None else 'extra' if b is None else 'differs'}")
+    return differences
 
 
 def main():
@@ -71,6 +109,11 @@ def main():
                 if row[leg] != "passed" and row[leg] not in EXCUSED[leg]:
                     row.setdefault("regressions", []).append(leg)
                     row[leg + "_error"] = last_error(legs[leg].get(path))
+            for leg in ("native", "linux"):
+                if row[leg] == "passed":
+                    differences = munki_differences(legs["apple"].get(path), legs[leg].get(path))
+                    if differences:
+                        row[leg + "_munki_differences"] = differences
         if "regressions" in row:
             regressions.append(row)
         elif row["apple"] == "missing" and row["linux"] not in ("passed", *EXCUSED["linux"]):
@@ -99,6 +142,14 @@ def main():
         lines += ["", f"## Linux failures with no macOS result ({len(unchecked)})", "",
                   "| Recipe | Linux | Last error |", "| --- | --- | --- |"]
         lines += [f"| `{row['path']}` | {row['linux']} | {row['linux_error'].replace('|', '/')} |" for row in unchecked]
+    munki = [row for row in rows if "native_munki_differences" in row or "linux_munki_differences" in row]
+    if munki:
+        lines += ["", f"## Munki output differences from Apple tools ({len(munki)})", "",
+                  "| Recipe | macOS, native | Linux |", "| --- | --- | --- |"]
+        for row in munki:
+            cells = ["<br>".join(row.get(leg + "_munki_differences", [])).replace("|", "/") or "same"
+                     for leg in ("native", "linux")]
+            lines.append(f"| `{row['path']}` | {cells[0]} | {cells[1]} |")
     excused = [row for row in rows if row["apple"] == "passed" and "regressions" not in row
                and (row["native"] != "passed" or row["linux"] != "passed")]
     if excused:

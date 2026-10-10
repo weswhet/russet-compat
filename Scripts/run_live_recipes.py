@@ -251,6 +251,18 @@ def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=No
             pass
     if small:
         result["small_downloads"] = small
+    # Munki recipes write pkginfo and catalogs into the recipe's own repository;
+    # keep those small plists so the legs can be compared file by file.
+    munki = []
+    for folder in ("pkgsinfo", "catalogs"):
+        for path in sorted((work / "munki" / folder).rglob("*")):
+            if path.is_file() and not path.is_symlink() and path.stat().st_size < 1024 ** 2:
+                target = directory / "munki" / path.relative_to(work / "munki")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(path, target)
+                munki.append(str(path.relative_to(work / "munki")))
+    if munki:
+        result["munki_files"] = munki
     if outputs is not None and result["status"] == "passed":
         result["built_outputs"] = collect_outputs(work, outputs / directory.name)
     if not keep_work:

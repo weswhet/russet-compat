@@ -42,7 +42,7 @@ jobs:
       - run: python -m pip install PyYAML==6.0.3
       - uses: dtolnay/rust-toolchain@stable
       - name: Fetch exact upstream recipes
-        if: inputs.recipe_set != 'org-sample'
+        if: ${{ !startsWith(inputs.recipe_set, 'org-') }}
         env:
           RECIPE_REF: ${{ inputs.recipe_ref }}
         run: |
@@ -56,11 +56,14 @@ jobs:
       # The combined tree is committed so the harness can check it stays
       # unchanged.
       - name: Fetch the pinned community recipe repositories
-        if: inputs.recipe_set == 'org-sample'
+        if: startsWith(inputs.recipe_set, 'org-')
+        env:
+          RECIPE_SET: ${{ inputs.recipe_set }}
         run: |
           python3 - <<'PYTHON'
           import json, os, pathlib, re, subprocess, tarfile, urllib.request
-          manifest = json.load(open('samples/org-recipes-2026-10-08.json'))
+          manifest = json.load(open({'org-sample': 'samples/org-recipes-2026-10-08.json',
+                                     'org-munki': 'samples/org-munki-recipes-2026-10-10.json'}[os.environ['RECIPE_SET']]))
           root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'upstream-recipes'
           root.mkdir()
           repos = {'recipes': manifest['core_recipes']['commit'], **manifest['repositories']}
@@ -146,7 +149,7 @@ jobs:
                      '--output', str(root / 'live-evidence'),
                      '--timeout', os.environ['RECIPE_TIMEOUT'],
                      '--shard', os.environ['SHARD'], '--shards', os.environ['SHARDS']]
-          if os.environ['RECIPE_SET'] == 'org-sample':
+          if os.environ['RECIPE_SET'].startswith('org-'):
               for folder in sorted((root / 'upstream-recipes').iterdir()):
                   if folder.is_dir() and not folder.name.startswith('.'):
                       command += ['--search-dir', str(folder)]

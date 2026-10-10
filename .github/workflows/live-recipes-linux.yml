@@ -22,10 +22,10 @@ on:
         type: string
         default: '0f7b61ab061c77710be4140c404910a11f89fc7b'
       recipe_set:
-        description: 'Recipes to run: those that completed on macOS in evidence/live-recipes-2026-10-07.json, the full autopkg/recipes inventory, or the community sample in samples/org-recipes-2026-10-08.json (pinned repositories; ignores recipe_ref)'
+        description: 'Recipes to run: those that completed on macOS in evidence/live-recipes-2026-10-07.json, the full autopkg/recipes inventory, the community sample in samples/org-recipes-2026-10-08.json, or the community munki sample in samples/org-munki-recipes-2026-10-10.json (pinned repositories; ignores recipe_ref)'
         required: true
         type: choice
-        options: ['macos-completed', 'all', 'org-sample']
+        options: ['macos-completed', 'all', 'org-sample', 'org-munki']
         default: macos-completed
       recipe_paths:
         description: 'JSON array of exact recipe paths; overrides recipe_set when not []'
@@ -91,6 +91,8 @@ jobs:
               paths = [r['recipe'] for r in evidence['recipes'] if r['final']['status'] == 'passed']
           if not paths and os.environ['RECIPE_SET'] == 'org-sample':
               paths = json.load(open('samples/org-recipes-2026-10-08.json'))['recipes']
+          if not paths and os.environ['RECIPE_SET'] == 'org-munki':
+              paths = json.load(open('samples/org-munki-recipes-2026-10-10.json'))['recipes']
           print(f'{len(paths) or "all"} recipes selected')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('paths=' + json.dumps(paths) + '\n')
