@@ -1,0 +1,164 @@
+name: Live recipes as one list
+# Runs a recipe sample as a single `russet run` list on one macOS runner,
+# once for each job count, so sequential and parallel runs of the same
+# Russet commit can be compared: which recipes pass, and how long the whole
+# list takes.
+on:
+  workflow_dispatch:
+    inputs:
+      russet_ref:
+        description: 'weswhet/russet branch, tag, or commit to build, package, and install'
+        required: true
+        type: string
+        default: main
+      recipe_set:
+        description: 'Community sample to run: samples/org-munki-recipes-2026-10-10.json or samples/org-recipes-2026-10-08.json'
+        required: true
+        type: choice
+        options: ['org-munki', 'org-sample']
+        default: org-munki
+      jobs:
+        description: 'JSON array of --jobs values; each runs the whole list on its own runner'
+        required: true
+        type: string
+        default: '[1, 4]'
+      authenticate_github:
+        description: 'Use the workflow token for public GitHub API requests'
+        required: true
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  run:
+    name: jobs ${{ matrix.jobs }}
+    runs-on: macos-15
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        jobs: ${{ fromJSON(inputs.jobs) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check out Russet
+        uses: actions/checkout@v7
+        with:
+          repository: weswhet/russet
+          ref: ${{ inputs.russet_ref }}
+          path: russet
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fetch the pinned community recipe repositories
+        env:
+          RECIPE_SET: ${{ inputs.recipe_set }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, pathlib, re, tarfile, urllib.request
+          manifest = json.load(open({'org-sample': 'samples/org-recipes-2026-10-08.json',
+                                     'org-munki': 'samples/org-munki-recipes-2026-10-10.json'}[os.environ['RECIPE_SET']]))
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'upstream-recipes'
+          root.mkdir()
+          repos = {'recipes': manifest['core_recipes']['commit'], **manifest['repositories']}
+          for name, commit in repos.items():
+              if not re.fullmatch(r'[A-Za-z0-9._-]+', name) or not re.fullmatch(r'[0-9a-f]{40}', commit):
+                  raise ValueError(f'bad repository entry {name} {commit}')
+              url = f'https://codeload.github.com/autopkg/{name}/tar.gz/{commit}'
+              with urllib.request.urlopen(url) as response, tarfile.open(fileobj=response, mode='r|gz') as archive:
+                  archive.extractall(root / '.download', filter='data')
+              (root / '.download' / f'{name}-{commit}').rename(root / name)
+          (root / '.download').rmdir()
+          print(f'{len(repos)} repositories fetched')
+          PYTHON
+      - name: Build, package, and install Russet
+        working-directory: russet/rust
+        env:
+          RUSSET_REF: ${{ inputs.russet_ref }}
+        run: |
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          cargo build --locked --release --target aarch64-apple-darwin -p russet
+          cargo xtask package --target aarch64-apple-darwin --bin-dir target/aarch64-apple-darwin/release
+          tar -xzf dist/russet-development-aarch64-apple-darwin.tar.gz -C "$RUNNER_TEMP"
+          sudo /bin/sh "$RUNNER_TEMP/russet-development-aarch64-apple-darwin/install.sh" install
+          /usr/local/bin/russet version
+          echo "Russet \`$RUSSET_REF\` at \`$(git rev-parse HEAD)\`" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Write GitHub API token outside evidence
+        if: inputs.authenticate_github
+        env:
+          LIVE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYTHON'
+          import os, pathlib
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'autopkg-github-token'
+          descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(descriptor, 'w') as token_file:
+              token_file.write(os.environ['LIVE_GITHUB_TOKEN'])
+          PYTHON
+      # Every recipe shares one cache and one Munki repository, as in a real
+      # recipe list. The run's exit status is recorded, not checked: a list
+      # with any failed recipe exits 70.
+      - name: Run the whole list
+        env:
+          RECIPE_SET: ${{ inputs.recipe_set }}
+          JOBS: ${{ matrix.jobs }}
+          AUTHENTICATE_GITHUB: ${{ inputs.authenticate_github }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, pathlib, plistlib, subprocess, time
+          temp = pathlib.Path(os.environ['RUNNER_TEMP'])
+          recipes = temp / 'upstream-recipes'
+          manifest = json.load(open({'org-sample': 'samples/org-recipes-2026-10-08.json',
+                                     'org-munki': 'samples/org-munki-recipes-2026-10-10.json'}[os.environ['RECIPE_SET']]))
+          evidence, work = temp / 'list-evidence', temp / 'list-work'
+          evidence.mkdir()
+          for name in ('cache', 'overrides', 'repos', 'tmp', 'munki/catalogs', 'munki/pkgs', 'munki/pkgsinfo', 'munki/icons'):
+              (work / name).mkdir(parents=True)
+          search = [str(path) for path in sorted(recipes.iterdir()) if path.is_dir()]
+          preferences = {'CACHE_DIR': str(work / 'cache'), 'RECIPE_SEARCH_DIRS': search,
+                         'RECIPE_OVERRIDE_DIRS': [str(work / 'overrides')], 'RECIPE_REPO_DIR': str(work / 'repos'),
+                         'RECIPE_REPOS': {}, 'RECIPE_MAP_PATH': str(work / 'map.json'),
+                         'MUNKI_REPO': str(work / 'munki'), 'MUNKI_REPO_PLUGIN': 'FileRepo',
+                         'FAIL_RECIPES_WITHOUT_TRUST_INFO': False}
+          prefs = work / 'prefs.plist'
+          prefs.write_bytes(plistlib.dumps(preferences))
+          environment = {key: value for key, value in os.environ.items() if not key.startswith('AUTOPKG_')}
+          environment.update(AUTOPKG_RS_PREFERENCES_FILE=str(prefs), AUTOPKG_RS_CACHE_DIR=str(work / 'cache'),
+                             TMPDIR=str(work / 'tmp'), TMP=str(work / 'tmp'), TEMP=str(work / 'tmp'), RUST_BACKTRACE='1')
+          paths = manifest['recipes']
+          command = ['/usr/local/bin/russet', 'run', '-vv', '--jobs', os.environ['JOBS'], '--prefs', str(prefs),
+                     '--report-plist', str(evidence / 'report.plist'),
+                     '--key', 'MUNKI_REPO=' + str(work / 'munki'), '--key', 'MUNKI_REPO_PLUGIN=FileRepo']
+          if os.environ['AUTHENTICATE_GITHUB'] == 'true':
+              command += ['--key', 'GITHUB_TOKEN_PATH=' + str(temp / 'autopkg-github-token')]
+          command += [str(recipes / path) for path in paths]
+          started = time.monotonic()
+          with (evidence / 'run.log').open('wb') as log:
+              status = subprocess.call(command, cwd=work, env=environment, stdout=log, stderr=subprocess.STDOUT)
+          seconds = round(time.monotonic() - started, 1)
+          failed = {}
+          if (evidence / 'report.plist').exists():
+              for failure in plistlib.loads((evidence / 'report.plist').read_bytes()).get('failures', []):
+                  failed[failure['recipe']] = failure['message']
+          results = [{'path': path, 'status': 'failed' if str(recipes / path) in failed else 'passed',
+                      'message': failed.get(str(recipes / path), '')} for path in paths]
+          if not (evidence / 'report.plist').exists():
+              for result in results:
+                  result['status'] = 'unknown'
+          passed = sum(result['status'] == 'passed' for result in results)
+          summary = {'jobs': int(os.environ['JOBS']), 'exit_status': status, 'wall_clock_seconds': seconds,
+                     'recipes': len(paths), 'passed': passed, 'results': results}
+          (evidence / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write(f"\n**--jobs {os.environ['JOBS']}**: {passed} of {len(paths)} passed, "
+                        f"exit status {status}, {seconds / 60:.1f} minutes\n")
+          print(json.dumps({key: value for key, value in summary.items() if key != 'results'}))
+          PYTHON
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: list-jobs-${{ matrix.jobs }}
+          path: ${{ runner.temp }}/list-evidence
+          if-no-files-found: error
+          retention-days: 14
