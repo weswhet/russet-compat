@@ -49,6 +49,18 @@ jobs:
           ref: ${{ inputs.russet_ref }}
           path: russet
           persist-credentials: false
+      # A list keeps every recipe's downloads until it ends, unlike the
+      # one-recipe-at-a-time runs, which clean up after each recipe. Remove
+      # the Xcode versions this runner doesn't select, and the Android SDK.
+      - name: Free disk space
+        run: |
+          df -h /
+          selected=$(xcode-select -p | sed 's|/Contents/Developer$||')
+          for app in /Applications/Xcode*.app; do
+            [ "$(cd "$app" && pwd -P)" = "$(cd "$selected" && pwd -P)" ] || sudo rm -rf "$app"
+          done
+          rm -rf "$HOME/Library/Android"
+          df -h /
       - uses: dtolnay/rust-toolchain@stable
       - name: Fetch the pinned community recipe repositories
         env:
