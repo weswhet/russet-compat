@@ -83,37 +83,46 @@ jobs:
           python Scripts/capture_rust_contract.py --check
           python Scripts/capture_community_processors.py --check
       - name: Build the Russet development executable
+        id: build
         run: cargo build --manifest-path russet/rust/Cargo.toml --locked -p russet
+      # Each comparison runs even when an earlier one fails, so one known
+      # failure doesn't hide the rest. The job still fails if any step does.
       - name: Compare isolated portable processor fixtures
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON"
       - name: Compare portable processor logs at verbosity 2
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON" --verbose 2
       - name: Compare local HTTP and download cache fixtures
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_http.py --python "$REFERENCE_PYTHON" --verbose 2
       - name: Compare legacy download cache metadata and extended attributes
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_download_cache.py --python "$REFERENCE_PYTHON"
       - name: Compare TLS trust and hostname failures
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_tls.py --python "$REFERENCE_PYTHON"
       - name: Compare CLI, recipe reports, and persistence fixtures
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_cli.py --python "$REFERENCE_PYTHON"
       - name: Compare promoted metadata providers
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_community_modern.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON"
       - name: Compare promoted Adobe, Puppet, and Sassafras processors
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_community_legacy.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON"
       - name: Compare promoted builders and verify relocated framework artifact
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_community_builders.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON" --makecatalogs /usr/local/munki/makecatalogs --live-framework
       - name: Compare native NSPredicate fixtures
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_rust_processors.py --python "$REFERENCE_PYTHON" --fixtures russet/compatibility/predicate-fixtures.json
       - name: Compare native package and disk-image processors
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_rust_native.py --python "$REFERENCE_PYTHON"
       - name: Compare all seven Munki processor entrypoints
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_rust_munki.py --python "$REFERENCE_PYTHON"
       - name: Run Russet's ignored native tests with the pinned Munki tools
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: cargo test --manifest-path russet/rust/Cargo.toml --workspace --exclude xtask --locked -- --include-ignored --test-threads=1
