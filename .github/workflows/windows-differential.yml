@@ -2,8 +2,19 @@ name: Compare with Python AutoPkg on Windows
 on:
   push:
     branches: [main]
+    paths-ignore: &live-only
+      # Files only the live recipe runs use.
+      - '.github/workflows/live-*.yml'
+      - 'Scripts/run_live_*.py'
+      - 'Scripts/compare_live_legs.py'
+      - 'Scripts/verify_linux_outputs.py'
+      - 'evidence/**'
+      - 'samples/**'
+      - 'docs/**'
+      - 'README.md'
   pull_request:
     branches: [main]
+    paths-ignore: *live-only
   schedule:
     # Weekly, so changes on Russet's main branch are compared even when this
     # repository doesn't change.
