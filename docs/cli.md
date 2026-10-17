@@ -10,7 +10,7 @@ cache, override directory, and preference file. On macOS the extracted Python
 source receives a harness-only change: its preference bundle identifier becomes
 a unique empty test domain. The file preference directory is also redirected to
 the test configuration directory because Windows shell-folder APIs can ignore
-`LOCALAPPDATA`. The original preference parsers remain intact. Rust's `AUTOPKG_RS_PREFERENCES_FILE` bypasses native
+`LOCALAPPDATA`. The original preference parsers remain intact. Rust's `RUSSET_PREFERENCES_FILE` bypasses native
 preferences during comparison. Both implementations otherwise execute their real
 command code. Their test repositories and caches are never shared.
 

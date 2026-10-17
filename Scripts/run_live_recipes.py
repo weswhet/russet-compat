@@ -195,7 +195,7 @@ def run_one(binary, recipes, case, output, timeout, keep_work, reference_code=No
     (work / "config/Autopkg/config.plist").write_bytes(plistlib.dumps(preferences))
     environment = {key: value for key, value in os.environ.items()
                    if not key.startswith("AUTOPKG_")}
-    environment.update(AUTOPKG_RS_PREFERENCES_FILE=str(prefs), AUTOPKG_RS_CACHE_DIR=str(work / "cache"),
+    environment.update(RUSSET_PREFERENCES_FILE=str(prefs), RUSSET_CACHE_DIR=str(work / "cache"),
                        TMPDIR=str(work / "tmp"), TMP=str(work / "tmp"), TEMP=str(work / "tmp"),
                        RUST_BACKTRACE="1", XDG_CONFIG_HOME=str(work / "config"), PYTHONDONTWRITEBYTECODE="1")
     command = [str(binary), "run", "--prefs", str(prefs), "--report-plist", str(directory / "report.plist"),
