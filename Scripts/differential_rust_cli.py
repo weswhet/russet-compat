@@ -3,7 +3,7 @@
 
 The extracted Python preference bundle ID and file configuration directory are
 redirected to isolated test locations, preventing production preference reads. Its resulting empty-domain
-warning is removed explicitly. Rust uses AUTOPKG_RS_PREFERENCES_FILE to bypass
+warning is removed explicitly. Rust uses RUSSET_PREFERENCES_FILE to bypass
 native preferences. Neither CLI can write production preferences or caches.
 """
 import argparse
@@ -73,8 +73,8 @@ def setup(root):
     (root / "config/Autopkg/config.plist").write_bytes(plistlib.dumps(prefs))
     env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(root / "home"),
            "USERPROFILE": str(root / "home"), "XDG_CONFIG_HOME": str(root / "config"),
-           "LOCALAPPDATA": str(root / "config"), "AUTOPKG_RS_PREFERENCES_FILE": str(root / "prefs.plist"),
-           "AUTOPKG_RS_CACHE_DIR": str(root / "cache"), "COLUMNS": "80", "LC_ALL": "C", "TZ": "UTC"}
+           "LOCALAPPDATA": str(root / "config"), "RUSSET_PREFERENCES_FILE": str(root / "prefs.plist"),
+           "RUSSET_CACHE_DIR": str(root / "cache"), "COLUMNS": "80", "LC_ALL": "C", "TZ": "UTC"}
     env.update({"TMPDIR":str(root/"tmp"),"TMP":str(root/"tmp"),"TEMP":str(root/"tmp")})
     if sys.platform == "win32":
         for key in ("SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT"):

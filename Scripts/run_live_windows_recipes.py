@@ -62,7 +62,7 @@ def run_one(binary, recipes, relative, output, signtool, choco, timeout):
                        APPDATA=str(work / "appdata"), LOCALAPPDATA=str(work / "localappdata"),
                        XDG_CONFIG_HOME=str(work / "config"), TMP=str(work / "tmp"),
                        TEMP=str(work / "tmp"), TMPDIR=str(work / "tmp"),
-                       AUTOPKG_RS_PREFERENCES_FILE=str(prefs), AUTOPKG_RS_CACHE_DIR=str(work / "cache"),
+                       RUSSET_PREFERENCES_FILE=str(prefs), RUSSET_CACHE_DIR=str(work / "cache"),
                        RUST_BACKTRACE="1")
     report = directory / "report.plist"
     command = [str(binary), "run", "--prefs", str(prefs), "-vv", "--report-plist", str(report), str(recipes / relative)]

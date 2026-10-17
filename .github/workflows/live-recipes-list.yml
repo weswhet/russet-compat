@@ -135,7 +135,7 @@ jobs:
           prefs = work / 'prefs.plist'
           prefs.write_bytes(plistlib.dumps(preferences))
           environment = {key: value for key, value in os.environ.items() if not key.startswith('AUTOPKG_')}
-          environment.update(AUTOPKG_RS_PREFERENCES_FILE=str(prefs), AUTOPKG_RS_CACHE_DIR=str(work / 'cache'),
+          environment.update(RUSSET_PREFERENCES_FILE=str(prefs), RUSSET_CACHE_DIR=str(work / 'cache'),
                              TMPDIR=str(work / 'tmp'), TMP=str(work / 'tmp'), TEMP=str(work / 'tmp'), RUST_BACKTRACE='1')
           paths = manifest['recipes']
           command = ['/usr/local/bin/russet', 'run', '-vv', '--jobs', os.environ['JOBS'], '--prefs', str(prefs),
