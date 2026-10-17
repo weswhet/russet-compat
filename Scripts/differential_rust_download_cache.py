@@ -98,6 +98,8 @@ def run(case, command, root, origin, server, python, names):
     home = root.parent / (root.name + "-home")
     home.mkdir()
     process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home),
+                   # Keep the developer's own Russet preferences, such as CURL_PATH, out.
+                   "RUSSET_PREFERENCES_FILE": str(home / "russet-preferences.plist"),
                    "NO_PROXY": "127.0.0.1,localhost", "no_proxy": "127.0.0.1,localhost"}
     for relative, content in case.get("files", {}).items():
         path = root / relative

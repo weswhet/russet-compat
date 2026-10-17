@@ -139,7 +139,9 @@ def run_case(case, root, command):
                 archive.writestr(item, plistlib.dumps(content) if isinstance(content, dict) else content)
     home = root.parent / (root.name + "-home")
     home.mkdir()
-    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home)}
+    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home),
+                   # Keep the developer's own Russet preferences, such as CURL_PATH, out.
+                   "RUSSET_PREFERENCES_FILE": str(home / "russet-preferences.plist")}
     log_path = root.parent / (root.name + "-processor.log")
     if case.get("compare_logs"):
         process_env["AUTOPKG_DIFFERENTIAL_LOG_FILE"] = str(log_path)

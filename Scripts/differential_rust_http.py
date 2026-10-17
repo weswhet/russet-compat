@@ -88,9 +88,16 @@ class Handler(BaseHTTPRequestHandler):
                 content = b"<rss><channel /></rss>"
             elif path == "/appcast-invalid":
                 content = b"not xml"
+        if path == "/truncated-chunked":
+            # Chunked encoding needs HTTP/1.1 (RFC 9112 6.1). Over HTTP/1.0
+            # curl still decodes it but Russet's native engine rejects the
+            # response head; this case tests the truncated body itself.
+            self.protocol_version = "HTTP/1.1"
+            self.close_connection = True
         self.send_response(status)
         if path == "/truncated-chunked":
             self.send_header("Transfer-Encoding", "chunked")
+            self.send_header("Connection", "close")
         else:
             self.send_header("Content-Length", str(len(content) + (100 if path == "/truncated" else 0)))
         for key, value in extra.items():
@@ -136,7 +143,9 @@ def run(case, command, directory, url, server):
     directory.mkdir()
     home = directory.parent / (directory.name + "-home")
     home.mkdir()
-    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home)}
+    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home),
+                   # Keep the developer's own Russet preferences, such as CURL_PATH, out.
+                   "RUSSET_PREFERENCES_FILE": str(home / "russet-preferences.plist")}
     for name, value in case.get("files", {}).items():
         path = directory / name
         path.parent.mkdir(parents=True, exist_ok=True)
