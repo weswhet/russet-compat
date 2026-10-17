@@ -235,9 +235,29 @@ def unarchiver_python_default(stdout):
     return stdout
 
 
+# Russet tells people to run russet, not autopkg (weswhet/russet#23). Accept
+# exactly these messages and no other wording change.
+RUSSET_MESSAGES = [
+    ("SECURITY WARNING: russet is running as root", "SECURITY WARNING: autopkg is running as root"),
+    ("Run `russet generate-recipe-map` explicitly", "Run `autopkg generate-recipe-map` explicitly"),
+    ("To add a new recipe repo, use `russet repo-add <repo name>`", "To add a new recipe repo, use `autopkg repo-add <repo name>`"),
+    ("'russet search' no longer directly searches", "'autopkg search' no longer directly searches"),
+    ("Run russet update-trust-info to add script trust info", "Run autopkg update-trust-info to add script trust info"),
+    ('supplied to russet ("-p" command-line switch)', 'supplied to autopkg ("-p" command-line switch)'),
+]
+
+
+def autopkg_messages(outcome):
+    text = json.dumps(outcome)
+    for russet, autopkg in RUSSET_MESSAGES:
+        text = text.replace(json.dumps(russet)[1:-1], json.dumps(autopkg)[1:-1])
+    return json.loads(text)
+
+
 def equivalent(name, expected, actual):
     if name == "git-transport-sequence":
         return expected.keys()==actual.keys() and all(equivalent(step,expected[step],actual[step]) for step in expected)
+    actual = autopkg_messages(actual)
     expected={k:v for k,v in expected.items() if k != "reference_import_diagnostics"}
     actual={k:v for k,v in actual.items() if k != "reference_import_diagnostics"}
     # This release intentionally promotes 12 recipe processors and one alias.
@@ -326,6 +346,27 @@ def git_sequence(command, root, executable=None):
     return outcomes
 
 
+def reference_command(temp, python):
+    """Extracts the pinned reference into temp and returns the command that
+    runs it with isolated preferences."""
+    reference = temp / "reference"
+    reference.mkdir()
+    archive = reference_archive()
+    with tarfile.open(fileobj=io.BytesIO(archive)) as bundle:
+        bundle.extractall(reference)
+    library = reference / "Code/autopkglib/__init__.py"
+    source = library.read_text()
+    assert source.count('BUNDLE_ID = "com.github.autopkg"') == 1
+    source=source.replace('BUNDLE_ID = "com.github.autopkg"', 'BUNDLE_ID = "org.autopkg.cli-test.' + uuid.uuid4().hex + '"')
+    # Windows appdirs can consult native shell folders despite LOCALAPPDATA.
+    # Redirect its location only; the real Preferences parser remains intact.
+    original='config_dir = appdirs.user_config_dir(APP_NAME, appauthor=False)'
+    assert source.count(original)==1
+    source=source.replace(original,'config_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], APP_NAME)')
+    library.write_text(source)
+    return [python, str(Path(__file__).resolve()), "--worker", str(reference / "Code")]
+
+
 def main():
     global REFERENCE_PYTHON
     parser = argparse.ArgumentParser(description=__doc__)
@@ -347,22 +388,7 @@ def main():
     outcomes = {}
     with tempfile.TemporaryDirectory(prefix="autopkg-cli-differential-") as temporary:
         temp = Path(temporary).resolve()
-        reference = temp / "reference"
-        reference.mkdir()
-        archive = reference_archive()
-        with tarfile.open(fileobj=io.BytesIO(archive)) as bundle:
-            bundle.extractall(reference)
-        library = reference / "Code/autopkglib/__init__.py"
-        source = library.read_text()
-        assert source.count('BUNDLE_ID = "com.github.autopkg"') == 1
-        source=source.replace('BUNDLE_ID = "com.github.autopkg"', 'BUNDLE_ID = "org.autopkg.cli-test.' + uuid.uuid4().hex + '"')
-        # Windows appdirs can consult native shell folders despite LOCALAPPDATA.
-        # Redirect its location only; the real Preferences parser remains intact.
-        original='config_dir = appdirs.user_config_dir(APP_NAME, appauthor=False)'
-        assert source.count(original)==1
-        source=source.replace(original,'config_dir = os.path.join(os.environ["XDG_CONFIG_HOME"], APP_NAME)')
-        library.write_text(source)
-        command = [python, str(Path(__file__).resolve()), "--worker", str(reference / "Code")]
+        command = reference_command(temp, python)
         if args.capture_parsers or args.check_parsers:
             specs = {}
             for verb in verbs:
