@@ -263,15 +263,19 @@ def equivalent(name, expected, actual):
     actual = autopkg_messages(actual)
     expected={k:v for k,v in expected.items() if k != "reference_import_diagnostics"}
     actual={k:v for k,v in actual.items() if k != "reference_import_diagnostics"}
-    # This release intentionally promotes 12 recipe processors and one alias.
+    # This release intentionally promotes 12 recipe processors and one alias,
+    # and adds the processors Russet defines itself, such as
+    # RussetURLDownloader, when its checkout has a contract for them.
     # Accept only the exact new inventory; preserve every other output field.
     frozen = json.loads((COMPATIBILITY / "reference.json").read_text())["processors"]
     community = json.loads((COMPATIBILITY / "community-processors.json").read_text())
+    russet_contract = COMPATIBILITY / "russet-processors.json"
+    russet = json.loads(russet_contract.read_text())["processors"] if russet_contract.is_file() else {}
     # Require matching complete LF or CRLF inventories. In particular, do not
     # normalize line endings between implementations or elsewhere in the output.
     for newline in ("\n", "\r\n"):
         original_inventory = newline.join(sorted(frozen)) + newline
-        expanded_inventory = newline.join(sorted(set(frozen) | set(community["processors"]) | set(community["aliases"]))) + newline
+        expanded_inventory = newline.join(sorted(set(frozen) | set(community["processors"]) | set(community["aliases"]) | set(russet))) + newline
         if expected.get("stdout") == original_inventory and actual.get("stdout") == expanded_inventory:
             actual = dict(actual, stdout=original_inventory)
             break
