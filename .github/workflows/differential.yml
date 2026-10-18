@@ -116,6 +116,9 @@ jobs:
       - name: Compare CLI, recipe reports, and persistence fixtures
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: python Scripts/differential_rust_cli.py --python "$REFERENCE_PYTHON"
+      - name: Compare every CLI option
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: python Scripts/differential_rust_options.py --python "$REFERENCE_PYTHON"
       - name: Compare promoted metadata providers
         if: ${{ !cancelled() && steps.build.outcome == 'success' && runner.os == 'macOS' }}
         run: python Scripts/differential_community_modern.py --rust russet/rust/target/debug/russet --python "$REFERENCE_PYTHON"

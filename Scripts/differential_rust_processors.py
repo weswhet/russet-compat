@@ -139,7 +139,9 @@ def run_case(case, root, command):
                 archive.writestr(item, plistlib.dumps(content) if isinstance(content, dict) else content)
     home = root.parent / (root.name + "-home")
     home.mkdir()
-    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home)}
+    process_env = {**os.environ, "HOME": str(home), "USERPROFILE": str(home), "CFFIXED_USER_HOME": str(home),
+                   # Keep the developer's own Russet preferences, such as CURL_PATH, out.
+                   "RUSSET_PREFERENCES_FILE": str(home / "russet-preferences.plist")}
     log_path = root.parent / (root.name + "-processor.log")
     if case.get("compare_logs"):
         process_env["AUTOPKG_DIFFERENTIAL_LOG_FILE"] = str(log_path)
@@ -175,6 +177,21 @@ def run_case(case, root, command):
         outcome["processor_logs"] = normalize(logs, root)
     return outcome, result.stderr.decode(errors="replace")
 
+
+
+def linux_unarchiver_default(actual):
+    """Russet extracts zip and cpio archives with its built-in ditto
+    replacement on Linux, so it deliberately defaults
+    USE_PYTHON_NATIVE_EXTRACTOR to False there, where Python AutoPkg defaults
+    it to True. Accept exactly that default and nothing else."""
+    actual = json.loads(json.dumps(actual))
+    environment = actual.get("environment")
+    if environment and environment.get("USE_PYTHON_NATIVE_EXTRACTOR") is False:
+        environment["USE_PYTHON_NATIVE_EXTRACTOR"] = True
+    line = "Unarchiver: No value supplied for USE_PYTHON_NATIVE_EXTRACTOR, setting default value of: "
+    if "processor_logs" in actual:
+        actual["processor_logs"] = actual["processor_logs"].replace(line + "False\n", line + "True\n")
+    return actual
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -244,6 +261,8 @@ def main():
                     raise RuntimeError(f"Reference case {case['name']} failed: {py_error}")
                 continue
             actual, rust_error = run_case(case, temp / f"rust-{index}", [str(rust), "processor-run"])
+            if case["processor"] == "Unarchiver" and sys.platform.startswith("linux"):
+                actual = linux_unarchiver_default(actual)
             passed = actual == expected and expected["status"] == expected_status
             for key, value in case.get("expected_values", {}).items():
                 passed = passed and expected["environment"] is not None and expected["environment"].get(key) == value

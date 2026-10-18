@@ -244,6 +244,9 @@ RUSSET_MESSAGES = [
     ("'russet search' no longer directly searches", "'autopkg search' no longer directly searches"),
     ("Run russet update-trust-info to add script trust info", "Run autopkg update-trust-info to add script trust info"),
     ('supplied to russet ("-p" command-line switch)', 'supplied to autopkg ("-p" command-line switch)'),
+    # Russet's own preference domain, since it no longer reads AutoPkg's.
+    ("via `russet repo-add <dir>` or `defaults write com.github.russet RECIPE_SEARCH_DIRS ...`",
+     "via `autopkg repo-add <dir>` or `defaults write com.github.autopkg RECIPE_SEARCH_DIRS ...`"),
 ]
 
 
